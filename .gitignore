@@ -36,7 +36,7 @@ venv/
 env/                # 別の仮想環境名（時々使われる）
 
 # バイトコード
-__pycache__/        # Pythonのバイトコードキャッシュディレクトリ
+__pycache__/        
 *.pyc               # Pythonのコンパイル済みバイトコードファイル
 *.pyd               # Windows用Python拡張モジュール (DLL)
 *.so                # Linux/macOS用Python拡張モジュール (共有ライブラリ)

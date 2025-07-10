@@ -39,7 +39,7 @@ class ScriptRunnerApp:
     self.current_dir_label.pack(pady=5)
     
     self.load_scripts()
-
+  
   def load_scripts(self):
     """カレントディレクトリ内のPythonスクリプトをリストボックスに読み込む"""
     self.script_listbox.delete(0, tk.END)

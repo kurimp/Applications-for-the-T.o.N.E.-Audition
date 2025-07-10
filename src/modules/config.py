@@ -12,6 +12,8 @@ class ConfigApp:
     self.root = root
     self.root.title("設定ツール")
     self.root.geometry("550x450") # 少しウィンドウサイズを大きく
+    root.attributes("-topmost", True)
+    root.after(100, lambda: root.attributes("-topmost", False))
 
     self.config_filepath = "../assets/config.ini" # デフォルトの設定ファイル名
     
