@@ -17,11 +17,8 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 class MainApp:
   def __init__(self, root):
-    self.band_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "data", "band.csv")
-    self.sche_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "data", "schedule.csv")
     
-    self.df_band = pd.read_csv(self.band_file_path)
-    self.df_sche = pd.read_csv(self.sche_file_path)
+    self.read_csvs()
     
     self.df_band = self.df_band.fillna('')
 
@@ -280,10 +277,8 @@ class MainApp:
     
     number = np.arange(1, len(times)+1, 1)
     
-    output_folder_path = '../../output/'
+    output_folder_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "output")
     output_file_name = "result_"+datetime.now().strftime('%y%m%d%H%M%S')+".csv"
-    
-    os.makedirs(output_folder_path, exist_ok=True)
     
     output_folder_path = os.path.join(output_folder_path, output_file_name)
     
@@ -294,6 +289,8 @@ class MainApp:
         out.write(f"\n{number[i]}\t"
                   f"{times[i]:.1f}")
     
+    self.root.after(0, lambda: self.writeToLog(f"試行回数の情報を{output_folder_path}として保存しました。"))
+    
     self.button_running.config(state=tk.NORMAL)
   
   def start_running_thread(self):
@@ -303,6 +300,20 @@ class MainApp:
     self.running_thread = threading.Thread(target=self.running)
     self.running_thread.daemon = True
     self.running_thread.start()
+  
+  def read_csvs(self):
+    self.band_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "data", "band.csv")
+    self.sche_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "data", "schedule.csv")
+    
+    try:
+      self.df_band = pd.read_csv(self.band_file_path)
+    except Exception as e:
+      messagebox.showerror("Error", f"バンドデータの読み込みに失敗しました:{e}")
+      
+    try:
+      self.df_sche = pd.read_csv(self.sche_file_path)
+    except Exception as e:
+      messagebox.showerror("Error", f"スケジュールデータの読み込みに失敗しました:{e}")
   
   def close_app(self):
       self.root.destroy()

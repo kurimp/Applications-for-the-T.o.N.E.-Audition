@@ -25,13 +25,44 @@ class BandInfoApp:
     
     ############information############
     self.frame_info = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
-    self.label_info = self.lw.label_maker(self.frame_info, "出演不可能時間のみここで記入してください。記入の際は、以下の記入例に忠実に従ってください。なお、スペースは自動で消去します。\n09:00:00-13:00:00,15:00:00-16:00:00")
+    self.label_info = self.lw.label_maker(self.frame_info, "バンド一覧、および祭典項目一覧をインポートします。")
     self.frame_info.grid(row=0, column=0, sticky="ew")
     self.label_info.grid(row=0, column=0, sticky="ew")
     
     self.frame_info.grid_columnconfigure(0, weight=1)
     
-    ############tree############
+    ############contents############
+    self.frame_cont = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
+    self.frame_cont.grid(row=1, column=0, sticky="ewsn")
+    
+    ############band############
+    self.frame_band = tk.Frame(self.frame_cont, padx=10, pady=10, bd=1, relief="ridge")
+    self.button_band = tk.Button(self.frame_band, text="バンドCSVを開く", command=self.open_csv_band)
+    
+    self.box_band = tk.Text(self.frame_band, state='disabled', borderwidth=5, wrap='word')
+    self.yscroll_band = ttk.Scrollbar(self.frame_band, orient="vertical", command=self.box_band.yview)
+    self.box_band.configure(yscrollcommand=self.yscroll_band.set)
+    
+    self.frame_band.grid(row=0, column=0, sticky="ewsn")
+    self.button_band.grid(row=0, column=0, sticky="ew")
+    self.box_band.grid(row=1, column=0, sticky="ewsn")
+    self.yscroll.grid(row=1, column=1, sticky="sn")
+    
+    ############item############
+    self.frame_item = tk.Frame(self.frame_cont, padx=10, pady=10, bd=1, relief="ridge")
+    self.button_item = tk.Button(self.frame_band, text="バンドCSVを開く", command=self.open_csv_band)
+    
+    self.box_item = tk.Text(self.frame_band, state='disabled', borderwidth=5, wrap='word')
+    self.yscroll_band = ttk.Scrollbar(self.frame_band, orient="vertical", command=self.box_band.yview)
+    self.box_band.configure(yscrollcommand=self.yscroll_band.set)
+    
+    self.frame_band.grid(row=0, column=0, sticky="ewsn")
+    self.button_band.grid(row=0, column=0, sticky="ew")
+    self.box_band.grid(row=1, column=0, sticky="ewsn")
+    self.yscroll.grid(row=1, column=1, sticky="sn")
+    
+    
+    
     self.frame_tree = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
     self.tree = ttk.Treeview(self.frame_tree, show="headings")
     self.frame_tree.grid(row=1, column=0, sticky="ewsn")
@@ -237,7 +268,7 @@ class BandInfoApp:
     if os.path.exists(self.save_filepath):
       self.read_filepath = self.save_filepath
       self.read_csv(self.read_filepath)
-    self.savestatus = True
+      self.savestatus = True
   
   def open_csv(self):
     filepath = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
@@ -289,11 +320,8 @@ class BandInfoApp:
       self.df.to_csv(self.save_filepath, index=False, encoding='utf-8')
       self.label_status.config(text="保存しました！", foreground="green")
       self.savestatus = True
-      return True
     except Exception as e:
-      messagebox.showerror("Error", f"ファイルの保存に失敗しました:{e}")
-      self.label_status.config(text=f"保存に失敗しました……", foreground="red")
-      return False
+      self.label_status.config(text=f"保存に失敗しました:{e}")
       
   def close_app(self):
     if self.savestatus:
@@ -310,9 +338,8 @@ class BandInfoApp:
     if select_close == None:
       return
     elif select_close:
-      tf_save = self.save_csv()
-      if tf_save:
-        self.root.destroy()
+      self.save_csv()
+      self.root.destroy()
     elif not select_close:
       self.root.destroy()
     return

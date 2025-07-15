@@ -144,7 +144,7 @@ class ScheduleInfoApp:
     if os.path.exists(self.save_filepath):
       self.read_filepath = self.save_filepath
       self.read_csv(self.read_filepath)
-      self.savestatus = True
+    self.savestatus = True
   
   def open_csv(self):
     filepath = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])

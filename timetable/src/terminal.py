@@ -9,6 +9,9 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 class ScriptRunnerApp:
   def __init__(self, root):
+    
+    self.make_folders()
+    
     self.root = root
     
     lw = label_wraplength(self.root)
@@ -45,9 +48,11 @@ class ScriptRunnerApp:
     filename_conf = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modules", "config.py")
     
     frame_conf = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
-    label_conf_text = "タイムテーブルの開始時間を定義します。"
+    #label_conf_text = "タイムテーブルの開始時間を定義します。"
+    label_conf_text = "このボタンは無効化されています。"
     label_conf = lw.label_maker(frame_conf, label_conf_text)
-    button_conf = tk.Button(frame_conf, text = "config.py", command=lambda: self.run_script(filename_conf))
+    #button_conf = tk.Button(frame_conf, text = "config.py", command=lambda: self.run_script(filename_conf))
+    button_conf = tk.Button(frame_conf, text = "何も起きません。")
     frame_conf.grid(row=0, column=0, sticky="ewsn", columnspan = 2)
     label_conf.grid(row=0, column=0)
     button_conf.grid(row=1, column=0, sticky="ewsn")
@@ -105,6 +110,17 @@ class ScriptRunnerApp:
       print(f"{path}が実行されました！")
     except Exception as e:
         print(f"起動に失敗しました: {e}")
+  
+  def make_folders(self):
+    
+    cd = os.path.abspath(os.path.curdir)
+    
+    folder_path_list = [os.path.join("assets", "data"), 
+                        os.path.join(os.path.dirname(cd), "output")]
+    
+    for folder_path in folder_path_list:
+      folder_path = os.path.abspath(folder_path)
+      os.makedirs(folder_path, exist_ok=True)
 
 if __name__ == "__main__":
   root = tk.Tk()
