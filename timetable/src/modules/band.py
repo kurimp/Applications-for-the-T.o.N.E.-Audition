@@ -5,13 +5,11 @@ import tkinter.font as tkFont
 import re
 import pandas as pd
 import numpy as np
-from utils.label_wraplength import label_wraplength
-
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+from modules.utils.label_wraplength import label_wraplength
 
 class BandInfoApp:
-  def __init__(self, root):
-    self.save_filepath=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "data", "band.csv")
+  def __init__(self, root, base_path, exe_path):
+    self.save_filepath=os.path.join(exe_path, "cache", "band.csv")
     
     self.root = root
     self.lw = label_wraplength(self.root)
@@ -261,7 +259,7 @@ class BandInfoApp:
         selected_columns = ['1', '2', '3', '4', '5', '6', '7']
         existing_selected_columns = [col for col in selected_columns if col in df.columns]
         if existing_selected_columns:
-          df['member'] = df[existing_selected_columns].values.tolist()
+          df['member'] = df[existing_selected_columns].apply(lambda row: row.tolist(), axis=1)
           df = df.drop(existing_selected_columns, axis="columns")
       return df
     
@@ -316,8 +314,3 @@ class BandInfoApp:
     elif not select_close:
       self.root.destroy()
     return
-  
-if __name__=="__main__":
-  root = tk.Tk()
-  app = BandInfoApp(root)
-  root.mainloop()

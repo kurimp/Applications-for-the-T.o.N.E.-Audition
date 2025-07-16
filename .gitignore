@@ -105,3 +105,6 @@ output/
 data/
 src/assets/data/*.csv
 src/assets/config.ini
+build/
+dist/cache
+terminal.spec

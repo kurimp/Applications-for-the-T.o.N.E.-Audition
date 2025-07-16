@@ -2,17 +2,13 @@ import os
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import tkinter.font as tkFont
-import re
 import pandas as pd
-import numpy as np
-from utils.label_wraplength import label_wraplength
+from modules.utils.label_wraplength import label_wraplength
 from datetime import datetime, timedelta
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
 class ScheduleInfoApp:
-  def __init__(self, root):
-    self.save_filepath=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "data", "schedule.csv")
+  def __init__(self, root, base_path, exe_path):
+    self.save_filepath=os.path.join(exe_path, "cache", "schedule.csv")
     
     self.root = root
     self.lw = label_wraplength(self.root)
@@ -193,7 +189,7 @@ class ScheduleInfoApp:
       time_start.append(sta.time())
       
       try:
-        duration = timedelta(minutes=int(duration))
+        duration = timedelta(minutes=int(str(duration).strip()))
       except ValueError:
         messagebox.showerror("エラー", "duration列の値が全て数値であることを確認してください。")
         return
@@ -235,8 +231,3 @@ class ScheduleInfoApp:
     elif not select_close:
       self.root.destroy()
     return
-  
-if __name__=="__main__":
-  root = tk.Tk()
-  app = ScheduleInfoApp(root)
-  root.mainloop()

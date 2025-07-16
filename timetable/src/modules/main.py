@@ -1,22 +1,19 @@
 import os
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
-import tkinter.font as tkFont
-import re
+from tkinter import ttk, messagebox
 import pandas as pd
 import numpy as np
-from datetime import datetime, time as dt_time, timedelta
-from utils.label_wraplength import label_wraplength
+from datetime import datetime, time as dt_time
+from modules.utils.label_wraplength import label_wraplength
 import random
 import time
-import csv
 import ast
 import threading
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
-
 class MainApp:
-  def __init__(self, root):
+  def __init__(self, root, base_path, exe_path):
+    self.base_path = base_path
+    self.exe_path = exe_path
     
     self.read_csvs()
     
@@ -192,22 +189,17 @@ class MainApp:
     return True
 
   def is_time_frame_available(self, start_time: dt_time, end_time: dt_time, unavailable_slots: list[tuple[dt_time, dt_time]]):
-    # 確認したい時間枠が有効か（開始時刻が終了時刻より前か）をチェック
     if start_time >= end_time:
       raise ValueError("時間枠の開始時刻は終了時刻より前である必要があります。")
     
     for unavailable_start, unavailable_end in unavailable_slots:
-      # 参加不可能な時間帯が有効か（開始時刻が終了時刻より前か）をチェック
       if unavailable_start >= unavailable_end:
         raise ValueError(f"参加不可能な時間帯の開始時刻が終了時刻より前ではありません: ({unavailable_start}, {unavailable_end})")
-      
-      # 重複の条件:
-      # (A.start <= B.end) and (A.end >= B.start)
-      # ここではAが確認したい時間枠、Bが参加不可能な時間帯
+
       if (start_time < unavailable_end) and (end_time > unavailable_start):
-        return False  # 重複が見つかった場合
-  
-    return True  # 重複が見つからなかった場合
+        return False
+    
+    return True
   
   def convert_time_strings_to_time_tuples(self, unavailable_slots_str: list[str]) -> list[tuple[dt_time, dt_time]]:
     converted_slots = []
@@ -277,19 +269,19 @@ class MainApp:
     
     number = np.arange(1, len(times)+1, 1)
     
-    output_folder_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "output")
+    output_folder_path = os.path.join(self.exe_path, "cache", "logs")
     output_file_name = "result_"+datetime.now().strftime('%y%m%d%H%M%S')+".csv"
     
-    output_folder_path = os.path.join(output_folder_path, output_file_name)
+    output_file_path = os.path.join(output_folder_path, output_file_name)
     
-    with open(output_folder_path, 'w', encoding='utf-8') as out:
+    with open(output_file_path, 'w', encoding='utf-8') as out:
       out.write("number\t"
                 "count")
       for i in range(len(times)):
         out.write(f"\n{number[i]}\t"
                   f"{times[i]:.1f}")
     
-    self.root.after(0, lambda: self.writeToLog(f"試行回数の情報を{output_folder_path}として保存しました。"))
+    self.root.after(0, lambda: self.writeToLog(f"試行回数の情報を{output_file_path}として保存しました。"))
     
     self.button_running.config(state=tk.NORMAL)
   
@@ -302,23 +294,20 @@ class MainApp:
     self.running_thread.start()
   
   def read_csvs(self):
-    self.band_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "data", "band.csv")
-    self.sche_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "data", "schedule.csv")
+    self.band_file_path = os.path.join(self.exe_path, "cache", "band.csv")
+    self.sche_file_path = os.path.join(self.exe_path, "cache", "schedule.csv")
     
     try:
       self.df_band = pd.read_csv(self.band_file_path)
     except Exception as e:
       messagebox.showerror("Error", f"バンドデータの読み込みに失敗しました:{e}")
+      self.close_app(self)
       
     try:
       self.df_sche = pd.read_csv(self.sche_file_path)
     except Exception as e:
       messagebox.showerror("Error", f"スケジュールデータの読み込みに失敗しました:{e}")
+      self.close_app(self)
   
   def close_app(self):
       self.root.destroy()
-
-if __name__=="__main__":
-  root = tk.Tk()
-  app = MainApp(root)
-  root.mainloop()

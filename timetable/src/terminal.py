@@ -1,14 +1,24 @@
 import os
 import tkinter as tk
-from tkinter import ttk
 import sys
-import subprocess
 from modules.utils.label_wraplength import label_wraplength
+from modules.band import BandInfoApp
+from modules.schedule import ScheduleInfoApp
+from modules.main import MainApp
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
+if getattr(sys, 'frozen', False):
+  bundle_dir = sys._MEIPASS
+  exe_dir = os.path.dirname(sys.executable)
+else:
+  bundle_dir = os.path.dirname(os.path.abspath(__file__))
+  exe_dir = os.path.dirname(os.path.abspath(__file__))
+
+os.chdir(bundle_dir)
 
 class ScriptRunnerApp:
   def __init__(self, root):
+    self.bundle_dir = bundle_dir
+    self.exe_dir = exe_dir
     
     self.make_folders()
     
@@ -45,8 +55,6 @@ class ScriptRunnerApp:
     pady_item = 5
     
     ############conf############
-    filename_conf = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modules", "config.py")
-    
     frame_conf = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     #label_conf_text = "タイムテーブルの開始時間を定義します。"
     label_conf_text = "このボタンは無効化されています。"
@@ -61,11 +69,10 @@ class ScriptRunnerApp:
     frame_conf.columnconfigure(0, weight=1)
     
     ############band############
-    filename_band = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modules", "band.py")
     frame_band = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     label_band_text = "バンド一覧をインポートします。"
     label_band = lw.label_maker(frame_band, label_band_text)
-    button_band = tk.Button(frame_band, text = "band.py", command=lambda: self.run_script(filename_band))
+    button_band = tk.Button(frame_band, text = "band.py", command=self.run_BandInfoApp)
     frame_band.grid(row=1, column=0, sticky="ewsn")
     label_band.grid(row=0, column=0)
     button_band.grid(row=1, column=0, sticky="ewsn")
@@ -74,11 +81,10 @@ class ScriptRunnerApp:
     frame_band.columnconfigure(0, weight=1)
     
     ############schedule############
-    filename_sche = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modules", "schedule.py")
     frame_sche = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     label_sche_text = "タイムテーブルをインポートします。"
     label_sche = lw.label_maker(frame_sche, label_sche_text)
-    button_sche = tk.Button(frame_sche, text = "schedule.py", command=lambda: self.run_script(filename_sche))
+    button_sche = tk.Button(frame_sche, text = "schedule.py", command=self.run_ScheduleInfoApp)
     frame_sche.grid(row=1, column=1, sticky="ewsn")
     label_sche.grid(row=0, column=0)
     button_sche.grid(row=1, column=0, sticky="ewsn")
@@ -87,11 +93,10 @@ class ScriptRunnerApp:
     frame_sche.columnconfigure(0, weight=1)
     
     ############main############
-    filename_main = os.path.join(os.path.dirname(os.path.abspath(__file__)), "modules", "main.py")
     frame_runmain = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     label_runmain_text = "タイムテーブル作成を実行します。"
     label_runmain = lw.label_maker(frame_runmain, label_runmain_text)
-    button_runmain = tk.Button(frame_runmain, text = "main.py", command=lambda: self.run_script(filename_main))
+    button_runmain = tk.Button(frame_runmain, text = "main.py", command=self.run_MainApp)
     frame_runmain.grid(row=2, column=0, sticky="ewsn", columnspan=2)
     label_runmain.grid(row=0, column=0)
     button_runmain.grid(row=1, column=0, sticky="ewsn")
@@ -101,26 +106,40 @@ class ScriptRunnerApp:
     
     lw.treatment()
   
-  def run_script(self, path):
-    try:
-      if sys.platform == "win32":
-        subprocess.Popen(['python', path], creationflags=subprocess.CREATE_NEW_CONSOLE)
-      else:
-        subprocess.Popen([sys.executable, path])
-      print(f"{path}が実行されました！")
-    except Exception as e:
-        print(f"起動に失敗しました: {e}")
+  def run_BandInfoApp(self):
+    root_band = tk.Toplevel(self.root)
+    BandInfoApp(root_band, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    root_band.transient(self.root)
+    root_band.grab_set()
+    self.root.wait_window(root_band)
+
+  def run_ScheduleInfoApp(self):
+    root_sche = tk.Toplevel(self.root)
+    ScheduleInfoApp(root_sche, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    root_sche.transient(self.root)
+    root_sche.grab_set()
+    self.root.wait_window(root_sche)
+  
+  def run_MainApp(self):
+    root_main = tk.Toplevel(self.root)
+    MainApp(root_main, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    root_main.transient(self.root)
+    root_main.grab_set()
+    self.root.wait_window(root_main)
   
   def make_folders(self):
     
-    cd = os.path.abspath(os.path.curdir)
+    folder_path_list = [os.path.join(self.exe_dir, "cache", "logs")]
     
-    folder_path_list = [os.path.join("assets", "data"), 
-                        os.path.join(os.path.dirname(cd), "output")]
+    print(f"DEBUG:{self.exe_dir}")
+    print(f"DEBUG:{folder_path_list}")
     
-    for folder_path in folder_path_list:
-      folder_path = os.path.abspath(folder_path)
-      os.makedirs(folder_path, exist_ok=True)
+    try:
+      for folder_path in folder_path_list:
+        folder_path = os.path.abspath(folder_path)
+        os.makedirs(folder_path, exist_ok=True)
+    except Exception as e:
+      print(f"DEBUG:{e}")
 
 if __name__ == "__main__":
   root = tk.Tk()
