@@ -108,3 +108,5 @@ src/assets/config.ini
 build/
 dist/cache
 terminal.spec
+tally/
+timetable/

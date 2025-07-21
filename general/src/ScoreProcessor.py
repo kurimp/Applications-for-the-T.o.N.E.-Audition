@@ -1,32 +1,19 @@
-import os
 import tkinter as tk
-import sys
 from modules.utils.label_wraplength import label_wraplength
 from modules.band import BandInfoApp
 from modules.schedule import ScheduleInfoApp
-from modules.main import MainApp
+from modules.main import TimetableMainApp
 
-if getattr(sys, 'frozen', False):
-  bundle_dir = sys._MEIPASS
-  exe_dir = os.path.dirname(sys.executable)
-else:
-  bundle_dir = os.path.dirname(os.path.abspath(__file__))
-  exe_dir = os.path.dirname(os.path.abspath(__file__))
-
-os.chdir(bundle_dir)
-
-class ScriptRunnerApp:
-  def __init__(self, root):
-    self.bundle_dir = bundle_dir
-    self.exe_dir = exe_dir
-    
-    self.make_folders()
+class ScoreProcessorApp:
+  def __init__(self, root, base_path, exe_path):
+    self.bundle_dir = base_path
+    self.exe_dir = exe_path
     
     self.root = root
     
     lw = label_wraplength(self.root)
     
-    self.root.title("ScriptRunnerApp")
+    self.root.title("TimetableMakerApp")
     self.root.geometry("500x400")
     
     self.root.grid_columnconfigure(0, weight=1, uniform="all_frames_width")
@@ -122,26 +109,12 @@ class ScriptRunnerApp:
   
   def run_MainApp(self):
     root_main = tk.Toplevel(self.root)
-    MainApp(root_main, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    TimetableMainApp(root_main, base_path=self.bundle_dir, exe_path=self.exe_dir)
     root_main.transient(self.root)
     root_main.grab_set()
     self.root.wait_window(root_main)
-    
-  def make_folders(self):
-    
-    folder_path_list = [os.path.join(self.exe_dir, "cache", "logs")]
-    
-    print(f"DEBUG:{self.exe_dir}")
-    print(f"DEBUG:{folder_path_list}")
-    
-    try:
-      for folder_path in folder_path_list:
-        folder_path = os.path.abspath(folder_path)
-        os.makedirs(folder_path, exist_ok=True)
-    except Exception as e:
-      print(f"DEBUG:{e}")
 
 if __name__ == "__main__":
   root = tk.Tk()
-  app = ScriptRunnerApp(root)
+  app = ScoreProcessorApp(root)
   root.mainloop()
