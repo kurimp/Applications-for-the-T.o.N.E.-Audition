@@ -1,8 +1,8 @@
 import tkinter as tk
 from modules.utils.label_wraplength import label_wraplength
-from modules.band import BandInfoApp
-from modules.schedule import ScheduleInfoApp
-from modules.main import TimetableMainApp
+from modules.BandInfoApp import BandInfoApp
+from modules.ScheduleInfoApp import ScheduleInfoApp
+from modules.TimetableMainApp import TimetableMainApp
 
 class ScoreProcessorApp:
   def __init__(self, root, base_path, exe_path):
@@ -13,7 +13,7 @@ class ScoreProcessorApp:
     
     lw = label_wraplength(self.root)
     
-    self.root.title("TimetableMakerApp")
+    self.root.title("ScoreProcessorApp")
     self.root.geometry("500x400")
     
     self.root.grid_columnconfigure(0, weight=1, uniform="all_frames_width")

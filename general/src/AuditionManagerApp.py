@@ -2,8 +2,8 @@ import os
 import tkinter as tk
 import sys
 from modules.utils.label_wraplength import label_wraplength
-from TimetableMaker import TimetableMakerApp
-from ScoreProcessor import ScoreProcessorApp
+from TimetableMakerApp import TimetableMakerApp
+from ScoreProcessorApp import ScoreProcessorApp
 
 if getattr(sys, 'frozen', False):
   bundle_dir = sys._MEIPASS
@@ -82,9 +82,10 @@ class AuditionManagerApp:
     
     ############ScoreProcessorApp############
     frame_score = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
-    label_score_text = "偏差値法を用いた得点処理"
+    label_score_text = "偏差値法を用いた得点処理(未実装)"
     label_score = lw.label_maker(frame_score, label_score_text)
     button_score = tk.Button(frame_score, text = "ScoreProcessorApp", command=self.run_ScoreProcessorApp)
+    button_score.config(state="disabled")
     frame_score.grid(row=1, column=1, sticky="ewsn")
     label_score.grid(row=0, column=0)
     button_score.grid(row=1, column=0, sticky="ewsn")
@@ -111,7 +112,8 @@ class AuditionManagerApp:
     
   def make_folders(self):
     
-    folder_path_list = [os.path.join(self.exe_dir, "cache", "logs")]
+    folder_path_list = [os.path.join(self.exe_dir, "cache", "TimetableMakerApp", "logs"), 
+                        os.path.join(self.exe_dir, "cache", "ScoreProcessorApp")]
     
     print(f"DEBUG:{self.exe_dir}")
     print(f"DEBUG:{folder_path_list}")
