@@ -5,6 +5,9 @@ from modules.utils.label_wraplength import label_wraplength
 from TimetableMakerApp import TimetableMakerApp
 from ScoreProcessorApp import ScoreProcessorApp
 
+#実行ファイル化のためのコマンド
+#pyinstaller --onefile --windowed ./general/src/AuditionManagerApp.pyy
+
 if getattr(sys, 'frozen', False):
   bundle_dir = sys._MEIPASS
   exe_dir = os.path.dirname(sys.executable)
