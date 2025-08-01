@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 class ScheduleInfoApp:
   def __init__(self, root, base_path, exe_path):
-    self.save_filepath=os.path.join(exe_path, "cache", "schedule.csv")
+    self.save_filepath=os.path.join(exe_path, "cache", "TimetableMakerApp", "schedule.csv")
     
     self.root = root
     self.lw = label_wraplength(self.root)

@@ -269,7 +269,7 @@ class TimetableMainApp:
     
     number = np.arange(1, len(times)+1, 1)
     
-    output_folder_path = os.path.join(self.exe_path, "cache", "logs")
+    output_folder_path = os.path.join(self.exe_path, "cache", "TimetableMakerApp", "logs")
     output_file_name = "result_"+datetime.now().strftime('%y%m%d%H%M%S')+".csv"
     
     output_file_path = os.path.join(output_folder_path, output_file_name)

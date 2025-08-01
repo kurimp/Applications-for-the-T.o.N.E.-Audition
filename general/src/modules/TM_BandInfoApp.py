@@ -9,7 +9,7 @@ from modules.utils.label_wraplength import label_wraplength
 
 class BandInfoApp:
   def __init__(self, root, base_path, exe_path):
-    self.save_filepath=os.path.join(exe_path, "cache", "band.csv")
+    self.save_filepath=os.path.join(exe_path, "cache", "TimetableMakerApp", "band.csv")
     
     self.root = root
     self.lw = label_wraplength(self.root)

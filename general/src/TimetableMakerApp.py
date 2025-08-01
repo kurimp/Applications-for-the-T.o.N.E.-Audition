@@ -1,8 +1,8 @@
 import tkinter as tk
 from modules.utils.label_wraplength import label_wraplength
-from modules.BandInfoApp import BandInfoApp
-from modules.ScheduleInfoApp import ScheduleInfoApp
-from modules.TimetableMainApp import TimetableMainApp
+from modules.TM_BandInfoApp import BandInfoApp
+from modules.TM_ScheduleInfoApp import ScheduleInfoApp
+from modules.TM_TimetableMainApp import TimetableMainApp
 
 class TimetableMakerApp:
   def __init__(self, root, base_path, exe_path):

@@ -23,7 +23,7 @@ class AuditionManagerApp:
     
     self.root = root
     
-    lw = label_wraplength(self.root)
+    self.lw = label_wraplength(self.root)
     
     self.root.title("AuditionManagerApp")
     self.root.geometry("500x400")
@@ -37,7 +37,7 @@ class AuditionManagerApp:
     frame_intro.grid_columnconfigure(0, weight=1)
     
     label_intro_text = "千葉大学アカペラサークルT.o.N.E.が実施するサークル内審査の運営を補助するためのツール群です。"
-    label_intro = lw.label_maker(frame_intro, label_intro_text)
+    label_intro = self.lw.label_maker(frame_intro, label_intro_text)
     label_intro.grid(row=0, column=0)
     
     ############main############
@@ -57,7 +57,7 @@ class AuditionManagerApp:
     frame_conf = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     #label_conf_text = "タイムテーブルの開始時間を定義します。"
     label_conf_text = "このボタンは無効化されています。"
-    label_conf = lw.label_maker(frame_conf, label_conf_text)
+    label_conf = self.lw.label_maker(frame_conf, label_conf_text)
     #button_conf = tk.Button(frame_conf, text = "config.py", command=lambda: self.run_script(filename_conf))
     button_conf = tk.Button(frame_conf, text = "何も起きません。")
     frame_conf.grid(row=0, column=0, sticky="ewsn", columnspan = 2)
@@ -70,7 +70,7 @@ class AuditionManagerApp:
     ############TimetableMakerApp############
     frame_timetable = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     label_timetable_text = "対面審査のタイムテーブル作成"
-    label_timetable = lw.label_maker(frame_timetable, label_timetable_text)
+    label_timetable = self.lw.label_maker(frame_timetable, label_timetable_text)
     button_timetable = tk.Button(frame_timetable, text = "TimetableMakerApp", command=self.run_TimetableMakerApp)
     frame_timetable.grid(row=1, column=0, sticky="ewsn")
     label_timetable.grid(row=0, column=0)
@@ -83,9 +83,9 @@ class AuditionManagerApp:
     ############ScoreProcessorApp############
     frame_score = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     label_score_text = "偏差値法を用いた得点処理(未実装)"
-    label_score = lw.label_maker(frame_score, label_score_text)
+    label_score = self.lw.label_maker(frame_score, label_score_text)
     button_score = tk.Button(frame_score, text = "ScoreProcessorApp", command=self.run_ScoreProcessorApp)
-    button_score.config(state="disabled")
+    #button_score.config(state="disabled")
     frame_score.grid(row=1, column=1, sticky="ewsn")
     label_score.grid(row=0, column=0)
     button_score.grid(row=1, column=0, sticky="ewsn")
@@ -94,7 +94,7 @@ class AuditionManagerApp:
     frame_score.rowconfigure(1, weight=1)
     frame_score.columnconfigure(0, weight=1)
     
-    lw.treatment()
+    self.lw.treatment()
   
   def run_TimetableMakerApp(self):
     root_timetable = tk.Toplevel(self.root)
@@ -113,10 +113,7 @@ class AuditionManagerApp:
   def make_folders(self):
     
     folder_path_list = [os.path.join(self.exe_dir, "cache", "TimetableMakerApp", "logs"), 
-                        os.path.join(self.exe_dir, "cache", "ScoreProcessorApp")]
-    
-    print(f"DEBUG:{self.exe_dir}")
-    print(f"DEBUG:{folder_path_list}")
+                        os.path.join(self.exe_dir, "cache", "ScoreProcessorApp", "logs")]
     
     try:
       for folder_path in folder_path_list:

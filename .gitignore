@@ -110,3 +110,5 @@ dist/cache
 terminal.spec
 tally/
 timetable/
+cache/
+data_for_test/
