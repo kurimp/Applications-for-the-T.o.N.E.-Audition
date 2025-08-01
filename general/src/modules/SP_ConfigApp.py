@@ -9,8 +9,8 @@ from modules.utils.label_wraplength import label_wraplength
 
 class ConfigApp:
   def __init__(self, root, base_path, exe_path):
-    self.save_filepath_band=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cache", "ScoreProcessorApp", "band.csv")
-    self.save_filepath_item=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cache", "ScoreProcessorApp", "item.csv")
+    self.save_filepath_band=os.path.join(exe_path, "cache", "ScoreProcessorApp", "band.csv")
+    self.save_filepath_item=os.path.join(exe_path, "cache", "ScoreProcessorApp", "item.csv")
     
     self.root = root
     self.lw = label_wraplength(self.root)

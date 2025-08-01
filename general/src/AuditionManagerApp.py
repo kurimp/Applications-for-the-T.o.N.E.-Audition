@@ -15,6 +15,9 @@ else:
   bundle_dir = os.path.dirname(os.path.abspath(__file__))
   exe_dir = os.path.dirname(os.path.abspath(__file__))
 
+print(f"【DEBUG】bundle_dir:{bundle_dir}")
+print(f"【DEBUG】exe_dir:{exe_dir}")
+
 os.chdir(bundle_dir)
 
 class AuditionManagerApp:

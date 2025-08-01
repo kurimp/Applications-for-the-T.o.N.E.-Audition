@@ -294,8 +294,8 @@ class TimetableMainApp:
     self.running_thread.start()
   
   def read_csvs(self):
-    self.band_file_path = os.path.join(self.exe_path, "cache", "band.csv")
-    self.sche_file_path = os.path.join(self.exe_path, "cache", "schedule.csv")
+    self.band_file_path = os.path.join(self.exe_path, "cache", "TimetableMakerApp", "band.csv")
+    self.sche_file_path = os.path.join(self.exe_path, "cache", "TimetableMakerApp", "schedule.csv")
     
     try:
       self.df_band = pd.read_csv(self.band_file_path)
