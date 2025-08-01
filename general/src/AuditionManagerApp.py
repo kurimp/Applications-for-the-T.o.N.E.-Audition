@@ -82,10 +82,9 @@ class AuditionManagerApp:
     
     ############ScoreProcessorApp############
     frame_score = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
-    label_score_text = "偏差値法を用いた得点処理(未実装)"
+    label_score_text = "偏差値法を用いた得点処理"
     label_score = self.lw.label_maker(frame_score, label_score_text)
     button_score = tk.Button(frame_score, text = "ScoreProcessorApp", command=self.run_ScoreProcessorApp)
-    #button_score.config(state="disabled")
     frame_score.grid(row=1, column=1, sticky="ewsn")
     label_score.grid(row=0, column=0)
     button_score.grid(row=1, column=0, sticky="ewsn")
