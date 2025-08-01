@@ -6,6 +6,7 @@ import re
 import pandas as pd
 import numpy as np
 from modules.utils.label_wraplength import label_wraplength
+import time
 
 class BandInfoApp:
   def __init__(self, root, base_path, exe_path):
@@ -23,7 +24,7 @@ class BandInfoApp:
     
     ############information############
     self.frame_info = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
-    self.label_info = self.lw.label_maker(self.frame_info, "出演不可能時間のみここで記入してください。記入の際は、以下の記入例に忠実に従ってください。なお、スペースは自動で消去します。\n09:00:00-13:00:00,15:00:00-16:00:00")
+    self.label_info = self.lw.label_maker(self.frame_info, "代替措置適用対象バンドはalternative列で「対象」を指定してください。\n出演不可能時間がある場合はunavailable_time列に記入してください。記入の際は、以下の記入例に忠実に従ってください。なお、スペースは自動で消去します。\n9:00:00-13:00:00,15:00:00-16:00:00")
     self.frame_info.grid(row=0, column=0, sticky="ew")
     self.label_info.grid(row=0, column=0, sticky="ew")
     
@@ -34,6 +35,9 @@ class BandInfoApp:
     self.tree = ttk.Treeview(self.frame_tree, show="headings")
     self.frame_tree.grid(row=1, column=0, sticky="ewsn")
     self.tree.grid(row=0, column=0, sticky="ewsn")
+    self.widget_editor = None
+    self.frame_editor = None
+    self.is_editing = False
     self.tree.bind("<Double-1>", self.on_cell_double_click)
     self.frame_tree.grid_rowconfigure(0, weight=1)
     self.frame_tree.grid_columnconfigure(0, weight=1)
@@ -95,6 +99,13 @@ class BandInfoApp:
       self.tree.insert("", "end", iid=index, values=list(row))
   
   def on_cell_double_click(self, event):
+    if self.is_editing:
+      return
+    
+    if self.widget_editor or self.frame_editor:
+      self.root.after_idle(self.cleanup_editor)
+      return
+    
     region = self.tree.identify("region" ,event.x, event.y)
     if region == "heading":
       return
@@ -105,8 +116,8 @@ class BandInfoApp:
     column_index = int(column_id.replace("#", "")) - 1
     col_name = self.tree["columns"][column_index]
     
-    if col_name != "unavailable_time":
-      self.label_status.config(text="unavailable_time列のみ編集可能です。", foreground="orange")
+    if not((col_name == 'unavailable_time')|(col_name == 'alternative')):
+      self.label_status.config(text="unavailable_time列またはalternative列のみ編集可能です。", foreground="orange")
       self.root.after(1000, lambda: self.label_status.config(text=""))
       return
     
@@ -123,33 +134,77 @@ class BandInfoApp:
     if x is None:
       return
     
-    editor = ttk.Entry(self.tree, width=width)
-    editor.place(x=x, y=y, width=width, height = height)
-    editor.insert(0, current_value)
-    editor.focus_set()
-    editor.grab_set()
+    self.is_editing = True
     
-    #選択状態が解除された時の処理
-    def on_entry_lost_focus(event):
-      new_value = editor.get()
-      new_value = new_value.strip().replace(" ", "").replace("　", "")
+    if col_name == 'unavailable_time':
+      self.widget_editor = ttk.Entry(self.tree, width=width)
+      self.widget_editor.place(x=x, y=y, width=width, height = height)
+      self.widget_editor.insert(0, current_value)
+      self.widget_editor.focus_set()
+      #self.widget_editor.grab_set()
       
-      updated_values = list(self.tree.item(item_id, "values"))
-      updated_values[column_index] = new_value
-      self.tree.item(item_id, values=updated_values)
+      self.widget_editor.bind("<FocusOut>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
+      self.widget_editor.bind("<Return>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
+      self.tree.bind("<Button-1>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
+
+    elif col_name == 'alternative':
+      self.frame_editor = ttk.Frame(self.tree, width=width, height=height)
+      self.frame_editor.place(x=x, y=y)
       
-      col_name = self.tree["columns"][column_index]
+      options = ["非対象", "対象"]
+      self.widget_editor = ttk.Combobox(self.frame_editor, values=options, state="readonly")
+      self.widget_editor.set(self.tree.item(item_id, 'values')[column_index])
+      self.widget_editor.pack(fill=tk.BOTH, expand=True)
+      self.widget_editor.focus_set()
+      #self.widget_editor.grab_set()
+
+      self.widget_editor.bind("<<ComboboxSelected>>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
+      self.widget_editor.bind("<FocusOut>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
+      self.tree.bind("<Button-1>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
+  
+  def on_edit_end(self, event, item_id, column_id, col_name, row_index):
+    if not self.widget_editor:
+      return
+    if not self.is_editing:
+      return
+      
+    try:
+      new_value = self.widget_editor.get()
+      
+      if col_name == 'unavailable_time':
+        new_value = new_value.strip().replace(" ", "").replace("　", "")
+      elif col_name == 'alternative':
+        if new_value == "非対象":
+          new_value = ""
+      
+      self.tree.set(item_id, column_id, new_value)
       self.df.loc[row_index, col_name] = new_value
-      
-      editor.grab_release()
-      editor.destroy()
-      
       self.savestatus = False
       
-      self.scanning()
-      
-    self.root.after(50, lambda: editor.bind("<FocusOut>", on_entry_lost_focus))
-    self.root.after(50, lambda: editor.bind("<Return>", on_entry_lost_focus))
+      if col_name == 'unavailable_time':
+        self.scanning()
+    finally:
+      self.root.after_idle(self.cleanup_editor)
+  
+  def cleanup_editor(self):
+    if not self.is_editing:
+        return
+    try:
+      if self.widget_editor:
+        self.widget_editor.unbind("<FocusOut>")
+        self.widget_editor.unbind("<Return>")
+        self.widget_editor.unbind("<<ComboboxSelected>>")
+        self.widget_editor.grab_release()
+        self.widget_editor.destroy()
+        self.widget_editor = None
+      if self.frame_editor:
+        self.frame_editor.destroy()
+        self.frame_editor = None
+      self.tree.unbind("<Button-1>")
+    except tk.TclError:
+      pass
+    finally:
+      self.is_editing = False
   
   def scanning(self):
     i = 0
@@ -211,7 +266,7 @@ class BandInfoApp:
     
     all_valid = True
     for value in value_list:
-      date_pattern_01 = re.compile(r"^\d{2}:\d{2}:\d{2}-\d{2}:\d{2}:\d{2}$")
+      date_pattern_01 = re.compile(r"^\d{1,2}:\d{2}:\d{2}-\d{1,2}:\d{2}:\d{2}$")
       
       if date_pattern_01.fullmatch(value):
         try:
@@ -241,15 +296,17 @@ class BandInfoApp:
     filepath = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
     if filepath:
       self.read_filepath = filepath
-    
-    self.read_csv(self.read_filepath)
-    self.savestatus = False
+      self.read_csv(self.read_filepath)
+      self.savestatus = False
   
   def read_csv(self, filepath):
     def preprocess_dataframe(df):
       df = df.fillna("")
       if "unavailable_time" not in df.columns:
         df.insert(2, "unavailable_time", "")
+        
+      if "alternative" not in df.columns:
+        df.insert(3, "alternative", "")
       
       if "no" not in df.columns:
         num = np.arange(1, len(df)+1, 1)

@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
 import numpy as np
-from datetime import datetime, time as dt_time
+from datetime import timedelta, datetime, time as dt_time
 from modules.utils.label_wraplength import label_wraplength
 import random
 import time
@@ -50,6 +50,7 @@ class TimetableMainApp:
     self.frame_conf = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
     self.frame_conf01 = tk.Frame(self.frame_conf)
     self.frame_conf02 = tk.Frame(self.frame_conf)
+    self.frame_conf03 = tk.Frame(self.frame_conf)
     
     self.check01_box = ttk.Checkbutton(self.frame_conf01, variable=self.check01, command = self.judging)
     self.frame_checkbox01 = tk.Frame(self.frame_conf01)
@@ -64,6 +65,12 @@ class TimetableMainApp:
     self.check03_entry = tk.Entry(self.frame_conf02, width=10)
     self.check03_entry.bind("<KeyRelease>", self.judging)
     self.check03_entry.insert(0, 100000000)
+    
+    self.frame_checkbox04 = tk.Frame(self.frame_conf03)
+    self.check04_text = self.lw.label_maker(self.frame_checkbox04, "ステージ外待機分数を整数で入力してください。")
+    self.check04_entry = tk.Entry(self.frame_conf03, width=10)
+    self.check04_entry.bind("<KeyRelease>", self.judging)
+    self.check04_entry.insert(0, 15)
     
     self.frame_conf.grid(row=1, column=0, sticky="ew")
     self.frame_conf01.grid(row=0, column=0, sticky="ew")
@@ -82,11 +89,19 @@ class TimetableMainApp:
     self.check03_text.grid(row=0, column=0)
     self.check03_entry.grid(row=0, column=0)
     
+    self.frame_conf03.grid(row=2, column=0, sticky="ew")
+    
+    self.frame_checkbox04.grid(row=0, column=1, sticky="ew")
+    self.check04_text.grid(row=0, column=0)
+    self.check04_entry.grid(row=0, column=0)
+    
     self.frame_conf.grid_columnconfigure(0, weight=1)
     self.frame_conf01.grid_columnconfigure(0, weight=0)
     self.frame_conf01.grid_columnconfigure(1, weight=1)
     self.frame_conf02.grid_columnconfigure(0, weight=0)
     self.frame_conf02.grid_columnconfigure(1, weight=1)
+    self.frame_conf03.grid_columnconfigure(0, weight=0)
+    self.frame_conf03.grid_columnconfigure(1, weight=1)
     
     ############status############
     self.frame_status = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
@@ -139,11 +154,16 @@ class TimetableMainApp:
     self.maximum_attempts = self.check03_entry.get().strip().replace(" ", "").replace("　", "")
     self.check03_entry.delete(0, tk.END)
     self.check03_entry.insert(0, self.maximum_attempts)
+    self.space_minutes = self.check04_entry.get().strip().replace(" ", "").replace("　", "")
+    self.check04_entry.delete(0, tk.END)
+    self.check04_entry.insert(0, self.space_minutes)
     if self.check01.get() and self.check02.get():
       try:
         self.maximum_attempts = int(self.maximum_attempts)
-        if self.maximum_attempts>0:
-          self.button_running.config(state=tk.NORMAL)
+        if self.maximum_attempts > 0:
+          self.space_minutes = int(self.space_minutes)
+          if self.space_minutes > 0:
+            self.button_running.config(state=tk.NORMAL)
           return
       except Exception:
         pass
@@ -212,6 +232,12 @@ class TimetableMainApp:
         start_time_str, end_time_str = slot_str.split('-')
         parsed_start_time = datetime.strptime(start_time_str.strip(), '%H:%M:%S').time()
         parsed_end_time = datetime.strptime(end_time_str.strip(), '%H:%M:%S').time()
+        
+        #予防的措置として、出演不可能時間の後ろをステージ外での待機時間分だけ伸ばす
+        _parsed_end_time = datetime.combine(datetime.today(), parsed_end_time)
+        _parsed_end_time += timedelta(minutes=10)
+        parsed_end_time = _parsed_end_time.time()
+        
         converted_slots.append((parsed_start_time, parsed_end_time))
     
     return converted_slots
@@ -220,7 +246,10 @@ class TimetableMainApp:
     bandlist = []
     for index, row in self.df_band.iterrows():
       band_name = row['name']
-      members = [m.strip() for m in row['member'] if m.strip()]
+      if row['alternative'] != "":
+        members = []
+      else:
+        members = [m.strip() for m in row['member'] if m.strip()]
       bandlist.append([band_name, members])
     
     self.count = 0
