@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['general/src/AuditionManagerApp.py'],
+    ['general\\src\\AuditionManagerApp.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -35,10 +35,4 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-)
-app = BUNDLE(
-    exe,
-    name='AuditionManagerApp.app',
-    icon=None,
-    bundle_identifier=None,
 )
