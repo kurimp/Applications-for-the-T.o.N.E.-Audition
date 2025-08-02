@@ -6,7 +6,7 @@ from TimetableMakerApp import TimetableMakerApp
 from ScoreProcessorApp import ScoreProcessorApp
 
 #実行ファイル化のためのコマンド
-#pyinstaller --onefile --windowed ./general/src/AuditionManagerApp.pyy
+#pyinstaller --onefile --windowed ./general/src/AuditionManagerApp.py
 
 if getattr(sys, 'frozen', False):
   bundle_dir = sys._MEIPASS
