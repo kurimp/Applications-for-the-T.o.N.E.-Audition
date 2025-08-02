@@ -118,7 +118,8 @@ class AuditionManagerApp:
   def make_folders(self):
     
     folder_path_list = [os.path.join(self.exe_dir, "cache", "TimetableMakerApp", "logs"), 
-                        os.path.join(self.exe_dir, "cache", "ScoreProcessorApp", "logs")]
+                        os.path.join(self.exe_dir, "cache", "ScoreProcessorApp", "logs"), 
+                        os.path.join(self.exe_dir, "cache", "CommentCollectionApp")]
     
     try:
       for folder_path in folder_path_list:
