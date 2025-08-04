@@ -7,6 +7,11 @@ from ScoreProcessorApp import ScoreProcessorApp
 
 #実行ファイル化のためのコマンド
 #pyinstaller --onefile --windowed ./general/src/AuditionManagerApp.py
+#requirements.txt出力のためのコマンド
+#pip freeze > requirements.txt
+#requirements.txt適用のためのコマンド
+#pip install -r requirements.txt
+
 
 if getattr(sys, 'frozen', False):
   bundle_dir = sys._MEIPASS
@@ -119,7 +124,8 @@ class AuditionManagerApp:
     
     folder_path_list = [os.path.join(self.exe_dir, "cache", "TimetableMakerApp", "logs"), 
                         os.path.join(self.exe_dir, "cache", "ScoreProcessorApp", "logs"), 
-                        os.path.join(self.exe_dir, "cache", "CommentCollectionApp")]
+                        os.path.join(self.exe_dir, "cache", "CommentCollectionApp"), 
+                        os.path.join(self.exe_dir, "cache", "SeparatePDFApp", "feedback")]
     
     try:
       for folder_path in folder_path_list:

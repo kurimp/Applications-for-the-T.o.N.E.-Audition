@@ -160,6 +160,7 @@ class ProcessingMainApp:
     df_data['合計'] = df_data[self.df_item['item']].sum(axis=1)
     
     item_list = ['合計'] + item_list
+    
     #審査員ごとの審査数の計算
     df_judge = pd.DataFrame(df_data['審査員名'].unique(), columns=['審査員名'])
     df_judge_count = df_data.groupby('審査員名')['表示バンド名'].count().reset_index()
@@ -211,7 +212,12 @@ class ProcessingMainApp:
     #結果を順位で並べ替え
     df_result = df_result.sort_values(by='合計_スコア', ascending=False)
     
-    df_result = pd.merge(df_result, self.df_band, left_on='表示バンド名' , right_on='name_on_form', how="left")
+    df_result = pd.merge(self.df_band, df_result, right_on='表示バンド名' , left_on='name_on_form', how="left").drop(columns='name_on_form').rename(columns={'name': 'バンド名'})
+    
+    #バンドごとの審査数の計算
+    _df_result_judge = df_data.groupby('表示バンド名')['審査員名'].count().reset_index()
+    _df_result_judge = _df_result_judge.rename(columns={'審査員名': 'バンド審査数'})
+    df_result = pd.merge(df_result, _df_result_judge, on='表示バンド名', how='left')
     
     print(self.df_data_raw)
     print(df_judge)
