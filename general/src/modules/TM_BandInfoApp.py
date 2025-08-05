@@ -6,7 +6,6 @@ import re
 import pandas as pd
 import numpy as np
 from modules.utils.label_wraplength import label_wraplength
-import time
 
 class BandInfoApp:
   def __init__(self, root, base_path, exe_path):

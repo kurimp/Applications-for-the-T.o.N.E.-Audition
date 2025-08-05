@@ -1,10 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-import tkinter.font as tkFont
-import re
 import pandas as pd
-import numpy as np
 from modules.utils.label_wraplength import label_wraplength
 
 class ConfigApp:

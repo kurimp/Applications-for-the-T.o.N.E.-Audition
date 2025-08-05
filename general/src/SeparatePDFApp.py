@@ -7,7 +7,7 @@ import pypdf
 #カレントディレクトリの移動
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-#PDF内のテキストを検索する関数の定義(by ChatGPT)
+#PDF内のテキストを検索する関数の定義
 def search_text_in_pdf(pdf_path, search_text):
   # PDFファイルを開く
   pdf_document = fitz.open(pdf_path)

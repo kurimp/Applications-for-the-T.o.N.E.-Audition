@@ -1,8 +1,6 @@
 import csv
 import os
-from datetime import datetime
 from googleapiclient.discovery import build
-import configparser
 from tqdm import tqdm
 import pandas as pd
 import random

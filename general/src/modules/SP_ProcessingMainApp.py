@@ -2,8 +2,6 @@ import os
 import tkinter as tk
 from tkinter import ttk, messagebox
 import pandas as pd
-import numpy as np
-from datetime import datetime, time as dt_time
 from modules.utils.label_wraplength import label_wraplength
 
 class ProcessingMainApp:

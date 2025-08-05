@@ -12,7 +12,6 @@ from ScoreProcessorApp import ScoreProcessorApp
 #requirements.txt適用のためのコマンド
 #pip install -r requirements.txt
 
-
 if getattr(sys, 'frozen', False):
   bundle_dir = sys._MEIPASS
   exe_dir = os.path.dirname(sys.executable)
