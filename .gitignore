@@ -43,8 +43,8 @@ __pycache__/
 
 # パッケージ配布関連
 .Python             # Pythonが生成するディレクトリ
-build/              # ビルド生成物
-dist/               # 配布用ビルド生成物 (PyInstallerの出力など)
+build/
+dist/
 *.egg-info/         # Pythonパッケージ情報ディレクトリ
 .eggs/              # eggファイル格納ディレクトリ
 *.egg
@@ -105,11 +105,6 @@ output/
 data/
 src/assets/data/*.csv
 src/assets/config.ini
-build/
-dist/cache
-terminal.spec
-tally/
-timetable/
 cache/
 data_for_test/
 ./test.xlsm
