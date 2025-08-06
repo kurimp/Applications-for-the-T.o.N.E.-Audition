@@ -108,3 +108,4 @@ src/assets/config.ini
 cache/
 data_for_test/
 ./test.xlsm
+*.spec
