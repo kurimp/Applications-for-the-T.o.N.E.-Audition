@@ -235,7 +235,7 @@ class TimetableMainApp:
         
         #予防的措置として、出演不可能時間の後ろをステージ外での待機時間分だけ伸ばす
         _parsed_end_time = datetime.combine(datetime.today(), parsed_end_time)
-        _parsed_end_time += timedelta(minutes=10)
+        _parsed_end_time += timedelta(minutes=self.space_minutes)
         parsed_end_time = _parsed_end_time.time()
         
         converted_slots.append((parsed_start_time, parsed_end_time))
