@@ -2,7 +2,7 @@
 # 1. ログファイル、一時ファイル、データベース
 # ----------------------------------------
 *.log               # アプリケーションが生成するログファイル
-*.tmp               # 一時ファイル
+*.tmp
 *.swp               # Vimなどのスワップファイル
 *.bak               # バックアップファイル
 *.sqlite3           # SQLiteなどの開発用データベースファイル (本番DBは別途管理)
@@ -36,7 +36,7 @@ venv/
 env/                # 別の仮想環境名（時々使われる）
 
 # バイトコード
-__pycache__/        
+__pycache__/
 *.pyc               # Pythonのコンパイル済みバイトコードファイル
 *.pyd               # Windows用Python拡張モジュール (DLL)
 *.so                # Linux/macOS用Python拡張モジュール (共有ライブラリ)
@@ -107,7 +107,7 @@ src/assets/data/*.csv
 src/assets/config.ini
 build/
 dist/cache
-terminal.spec
+*.spec
 tally/
 timetable/
 cache/
