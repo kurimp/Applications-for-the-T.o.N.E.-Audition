@@ -5,7 +5,7 @@ import tkinter.font as tkFont
 import pandas as pd
 import re
 from modules.utils.label_wraplength import label_wraplength
-from datetime import datetime, timedelta
+from datetime import datetime
 
 class DataTreatmentApp:
   def __init__(self, root, base_path, exe_path):

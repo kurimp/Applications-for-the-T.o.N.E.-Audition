@@ -1,10 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
-import tkinter.font as tkFont
-import re
 import pandas as pd
-import numpy as np
 from modules.utils.label_wraplength import label_wraplength
 
 class ConfigApp:
@@ -112,16 +109,22 @@ class ConfigApp:
     self.box_item['state'] = 'disabled'
   
   def load_initial_csv(self):
+    self.initialstatus_band = False
+    self.initialstatus_item = False
     if os.path.exists(self.save_filepath_band):
+      self.initialstatus_band = True
       read_filepath = self.save_filepath_band
       self.read_csv_band(read_filepath)
     if os.path.exists(self.save_filepath_item):
+      self.initialstatus_item = True
       read_filepath = self.save_filepath_item
       self.read_csv_item(read_filepath)
     
   def open_csv_band(self):
     filepath = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
     if filepath:
+      self.initialstatus_band = False
+      self.initialstatus_item = False
       read_filepath = filepath
     
     self.read_csv_band(read_filepath)
@@ -143,16 +146,18 @@ class ConfigApp:
         messagebox.showerror("Error", f"ファイルの形式が不正です。")
         return
       
-      member_columns = ['1', '2', '3', '4', '5', '6', '7']
+      if not self.initialstatus_band:
+        member_columns = ['1', '2', '3', '4', '5', '6', '7']
+        df_band = df_band[['name_on_form', 'name']+member_columns]
+        
+        existing_selected_columns = [col for col in member_columns if col in df_band]
+        if existing_selected_columns:
+          df_band['member'] = df_band[existing_selected_columns].apply(lambda row: row.tolist(), axis=1)
+          self.df_band = df_band.drop(existing_selected_columns, axis="columns")
+      elif self.initialstatus_band:
+        self.df_band = df_band.copy()
       
-      self.df_band = df_band[['name_on_form', 'name']+member_columns]
-      
-      existing_selected_columns = [col for col in member_columns if col in self.df_band]
-      if existing_selected_columns:
-        self.df_band['member'] = self.df_band[existing_selected_columns].apply(lambda row: row.tolist(), axis=1)
-        self.df_band = self.df_band.drop(existing_selected_columns, axis="columns")
-      
-      output = "name_on_form,name, member"
+      output = "表示バンド名,バンド名,メンバー"
       for name_on_form, name, member in zip(self.df_band['name_on_form'], self.df_band['name'], self.df_band['member']):
         if output != "":
           output += "\n"
