@@ -1,3 +1,4 @@
+altgraph==0.17.4
 cachetools==5.5.2
 certifi==2025.8.3
 charset-normalizer==3.4.2
@@ -8,12 +9,16 @@ google-auth-httplib2==0.2.0
 googleapis-common-protos==1.70.0
 httplib2==0.22.0
 idna==3.10
+macholib==1.16.3
 numpy==2.3.2
+packaging==25.0
 pandas==2.3.1
 proto-plus==1.26.1
 protobuf==6.31.1
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
+pyinstaller==6.15.0
+pyinstaller-hooks-contrib==2025.8
 PyMuPDF==1.26.3
 pyparsing==3.2.3
 pypdf==5.9.0
