@@ -20,7 +20,7 @@ Desktop.ini         # Windowsのフォルダ設定
 # 3. IDE (統合開発環境) やエディタ関連のファイル
 # ----------------------------------------
 .idea/              # IntelliJ IDEAなどの設定ディレクトリ
-.vscode/            # VS Codeの設定ディレクトリ (ただし、共有したい設定は含める場合もある)
+.vscode/
 *.iml               # IntelliJ IDEAのモジュールファイル
 *.project           # Eclipseのプロジェクトファイル
 *.classpath         # Eclipseのクラスパスファイル
@@ -113,3 +113,4 @@ timetable/
 cache/
 data_for_test/
 ./test.xlsm
+test/

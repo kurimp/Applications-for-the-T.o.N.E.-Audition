@@ -4,6 +4,7 @@ import sys
 from modules.utils.label_wraplength import label_wraplength
 from TimetableMakerApp import TimetableMakerApp
 from ScoreProcessorApp import ScoreProcessorApp
+from FeedbackMakerApp import FeedbackMakerApp
 
 #実行ファイル化のためのコマンド
 #pyinstaller --onefile --windowed ./general/src/AuditionManagerApp.py
@@ -103,6 +104,19 @@ class AuditionManagerApp:
     frame_score.rowconfigure(1, weight=1)
     frame_score.columnconfigure(0, weight=1)
     
+    ############FeedbackMakerApp############
+    frame_feedback = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
+    label_feedback_text = "フィードバックシートの作成支援"
+    label_feedback = self.lw.label_maker(frame_feedback, label_feedback_text)
+    button_feedback = tk.Button(frame_feedback, text = "FeedbackMakerApp", command=self.run_FeedbackMakerApp)
+    frame_feedback.grid(row=2, column=0, sticky="ewsn")
+    label_feedback.grid(row=0, column=0)
+    button_feedback.grid(row=1, column=0, sticky="ewsn")
+    
+    frame_feedback.rowconfigure(0, weight=0)
+    frame_feedback.rowconfigure(1, weight=1)
+    frame_feedback.columnconfigure(0, weight=1)
+    
     self.lw.treatment()
   
   def run_TimetableMakerApp(self):
@@ -118,13 +132,19 @@ class AuditionManagerApp:
     root_score.transient(self.root)
     root_score.grab_set()
     self.root.wait_window(root_score)
+  
+  def run_FeedbackMakerApp(self):
+    root_feedback = tk.Toplevel(self.root)
+    FeedbackMakerApp(root_feedback, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    root_feedback.transient(self.root)
+    root_feedback.grab_set()
+    self.root.wait_window(root_feedback)
     
   def make_folders(self):
     
     folder_path_list = [os.path.join(self.exe_dir, "cache", "TimetableMakerApp", "logs"), 
                         os.path.join(self.exe_dir, "cache", "ScoreProcessorApp", "logs"), 
-                        os.path.join(self.exe_dir, "cache", "CommentCollectionApp"), 
-                        os.path.join(self.exe_dir, "cache", "SeparatePDFApp", "feedback")]
+                        os.path.join(self.exe_dir, "cache", "FeedbackMakerApp")]
     
     try:
       for folder_path in folder_path_list:
