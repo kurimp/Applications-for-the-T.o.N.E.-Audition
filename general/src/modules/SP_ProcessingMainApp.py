@@ -222,9 +222,6 @@ class ProcessingMainApp:
     for item in item_list:
       df_data, df_result = culc_scores(item)
     
-    #結果を順位で並べ替え
-    df_result = df_result.sort_values(by='合計_スコア', ascending=False)
-    
     df_result = pd.merge(self.df_band, df_result, right_on='表示バンド名' , left_on='name_on_form', how="left").drop(columns='name_on_form').rename(columns={'name': 'バンド名'})
     
     #バンドごとの審査数の計算
@@ -232,94 +229,8 @@ class ProcessingMainApp:
     _df_result_judge = _df_result_judge.rename(columns={'審査員名': 'バンド審査数'})
     df_result = pd.merge(df_result, _df_result_judge, on='表示バンド名', how='left')
     
-    print(self.df_data_raw)
-    print(df_judge)
-    print(df_data)
-    print(df_result)
-    
-    self.WriteToLog("以下に処理の結果を表示します。")
-    self.WriteToLog(f"{df_result}")
-    try:
-      log_dir = os.path.join(self.exe_path, "cache", "ScoreProcessorApp", "logs")
-      path_data_raw = os.path.join(log_dir, "data_raw.csv")
-      path_judge = os.path.join(log_dir, "judge.csv")
-      path_data = os.path.join(log_dir, "data.csv")
-      path_result = os.path.join(log_dir, "result.csv")
-      
-      self.WriteToLog(f"ログを出力します。")
-      self.df_data_raw.to_csv(path_data_raw)
-      self.WriteToLog(f"生データ:{path_data_raw}")
-      df_judge.to_csv(path_judge)
-      self.WriteToLog(f"審査員データ:{path_judge}")
-      df_data.to_csv(path_data)
-      self.WriteToLog(f"処理データ:{path_data}")
-      df_result.to_csv(path_result)
-      self.WriteToLog(f"結果:{path_result}")
-    except Exception as e:
-      self.WriteToLog(f"ログ出力に際しエラーが発生しました:{e}")
-    
-    self.button_running.config(state=tk.NORMAL)
-    #審査員ごとの審査数の計算
-    df_judge = pd.DataFrame(df_data['審査員名'].unique(), columns=['審査員名'])
-    df_judge_count = df_data.groupby('審査員名')['表示バンド名'].count().reset_index()
-    df_judge_count = df_judge_count.rename(columns={'表示バンド名': '審査員審査数'})
-    df_judge = pd.merge(df_judge, df_judge_count, on='審査員名', how='left')
-    
-    #結果のDataFrameの作成
-    df_result = pd.DataFrame(df_data['表示バンド名'].unique(), columns=['表示バンド名'])
-    
-    def culc_values_for_judges(item):
-      #審査員ごとの平均および標準偏差の計算
-      df_judge_mean = df_data.groupby('審査員名')[item].mean().reset_index()
-      df_judge_mean = df_judge_mean.rename(columns={item: item+"_平均"})
-      df_judge_std = df_data.groupby('審査員名')[item].std(ddof=0).reset_index()
-      df_judge_std = df_judge_std.rename(columns={item: item+"_標準偏差"})
-      _df_judge = pd.merge(df_judge, df_judge_mean, on='審査員名', how='left')
-      _df_judge = pd.merge(_df_judge, df_judge_std, on='審査員名', how='left')
-      
-      return _df_judge
-    
-    def culc_scores(item):
-      _df_data = df_data.copy()
-      #偏差値の計算
-      _df_data[item+'_偏差値'] = (df_data[item]-df_data[item+'_平均'])/_df_data[item+'_標準偏差']*10+50
-      
-      #バンドごとの偏差値の平均(スコア)の計算
-      _df_result_item = _df_data.groupby('表示バンド名')[item+'_偏差値'].apply(
-        lambda x: x.sort_values().iloc[1:-1].mean() if len(x) > 2 else x.mean()
-      ).reset_index()
-      _df_result_item = _df_result_item.rename(columns={item+'_偏差値': item+'_スコア'})
-      
-      _df_result = pd.merge(df_result, _df_result_item, on='表示バンド名', how='left')
-      
-      return _df_data, _df_result
-    
-    for item in item_list:
-      df_judge = culc_values_for_judges(item)
-    
-    #審査員データを採点データに適用
-    df_data = pd.merge(df_data, df_judge, on='審査員名', how='left')
-    
-    #審査員審査数が基準値未満の審査員のデータを除外
-    df_data = df_data[df_data['審査員審査数']>=self.threshold]
-    
-    for item in item_list:
-      df_data, df_result = culc_scores(item)
-    
     #結果を順位で並べ替え
     df_result = df_result.sort_values(by='合計_スコア', ascending=False)
-    
-    df_result = pd.merge(self.df_band, df_result, right_on='表示バンド名' , left_on='name_on_form', how="left").drop(columns='name_on_form').rename(columns={'name': 'バンド名'})
-    
-    #バンドごとの審査数の計算
-    _df_result_judge = df_data.groupby('表示バンド名')['審査員名'].count().reset_index()
-    _df_result_judge = _df_result_judge.rename(columns={'審査員名': 'バンド審査数'})
-    df_result = pd.merge(df_result, _df_result_judge, on='表示バンド名', how='left')
-    
-    print(self.df_data_raw)
-    print(df_judge)
-    print(df_data)
-    print(df_result)
     
     self.WriteToLog("以下に処理の結果を表示します。")
     self.WriteToLog(f"{df_result}")

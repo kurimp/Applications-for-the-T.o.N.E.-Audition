@@ -1,13 +1,14 @@
 import os
 import tkinter as tk
 import sys
+import platform
 from modules.utils.label_wraplength import label_wraplength
 from TimetableMakerApp import TimetableMakerApp
 from ScoreProcessorApp import ScoreProcessorApp
 from FeedbackMakerApp import FeedbackMakerApp
 
 #実行ファイル化のためのコマンド
-#pyinstaller --onefile --windowed ./general/src/AuditionManagerApp.py
+#pyinstaller AuditionManagerApp.spec
 #requirements.txt出力のためのコマンド
 #pip freeze > requirements.txt
 #requirements.txt適用のためのコマンド
@@ -15,7 +16,15 @@ from FeedbackMakerApp import FeedbackMakerApp
 
 if getattr(sys, 'frozen', False):
   bundle_dir = sys._MEIPASS
-  exe_dir = os.path.dirname(sys.executable)
+  check01 = platform.system() == "Darwin"
+  check02 = os.path.basename(sys.executable) == "AuditionManagerApp"
+  check03 = os.path.basename(os.path.dirname(sys.executable)) == "MacOS"
+  check04 = os.path.basename(os.path.dirname(os.path.dirname(sys.executable))) == "Contents"
+  check05 = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(sys.executable)))) == "AuditionManagerApp.app"
+  if check01 & check02 & check03 & check04 & check05:
+    exe_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(sys.executable))))
+  else:
+    exe_dir = os.path.dirname(sys.executable)
 else:
   bundle_dir = os.path.dirname(os.path.abspath(__file__))
   exe_dir = os.path.dirname(os.path.abspath(__file__))
@@ -141,7 +150,6 @@ class AuditionManagerApp:
     self.root.wait_window(root_feedback)
     
   def make_folders(self):
-    
     folder_path_list = [os.path.join(self.exe_dir, "cache", "TimetableMakerApp", "logs"), 
                         os.path.join(self.exe_dir, "cache", "ScoreProcessorApp", "logs"), 
                         os.path.join(self.exe_dir, "cache", "FeedbackMakerApp")]
