@@ -114,7 +114,7 @@ class CommentCollectionApp:
       self.WriteToLog("読み込んだデータCSVは以下です。")
       self.WriteToLog(self.df_data)
       
-      data_columns = ['Number','Name','Video ID','Score','judge','Band ID']
+      data_columns = ['number','name','videoID','score','judge','bandID']
       
       if not set(data_columns).issubset(self.df_data):
         self.WriteToLog(f"データCSVが条件を満たしていません。")
@@ -142,15 +142,15 @@ class CommentCollectionApp:
       with open(savefile_path, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         #タイトルの書き込み
-        writer.writerow(["Number", "Name", "Video ID", "Band ID", "Score", "judge", "Title", "Comments"])
+        writer.writerow(["number", "name", "videoID", "bandID", "score", "judge", "title", "comments"])
         
         for i in tqdm(range(0, len(self.df_data))):
           #プレイリストデータから動画IDを１つ取得
-          number = self.df_data.at[i, "Number"]
-          name = self.df_data.at[i, "Name"]
-          video_id = self.df_data.at[i, 'Video ID']
-          band_id = self.df_data.at[i, 'Band ID']
-          score = self.df_data.at[i, "Score"]
+          number = self.df_data.at[i, "number"]
+          name = self.df_data.at[i, "name"]
+          video_id = self.df_data.at[i, 'videoID']
+          band_id = self.df_data.at[i, 'bandID']
+          score = self.df_data.at[i, "score"]
           judge = self.df_data.at[i, "judge"]
           
           #当該動画の詳細情報を取得

@@ -116,7 +116,7 @@ class SeparatePDFApp:
     self.entry_conf01.delete(0, tk.END)
     self.entry_conf01.insert(0, self.filename_temp)
     if self.filename_temp != "":
-      self.label_conf01_2.configure(text=f"{self.filename_temp}_[バンド名].pdf")
+      self.label_conf01_2.configure(text=f"{self.filename_temp}_[number]_[name].pdf")
     self.WriteToLog(self.filename_temp != "")
     self.WriteToLog(self.status_read_data)
     self.WriteToLog(self.status_read_pdf)
@@ -134,7 +134,7 @@ class SeparatePDFApp:
       self.WriteToLog("読み込んだデータCSVは以下です。")
       self.WriteToLog(self.df_data)
       
-      data_columns = ['Number','Name','Video ID','Score','judge','Band ID']
+      data_columns = ['number','name','bandID']
       
       if not set(data_columns).issubset(self.df_data):
         self.WriteToLog(f"データCSVが条件を満たしていません。")
@@ -197,27 +197,29 @@ class SeparatePDFApp:
 
       for i in tqdm(range(0, len(df1))):
         
-        search_text = df1.at[i, "Band ID"]
+        search_text = df1.at[i, "bandID"]
         result = search_text_in_pdf(self.pdf_path, search_text)
         if i == len(df1)-1:
           nresult = [len(base_pdf.pages)]
         else:
-          search_ntext = df1.at[i+1, "Band ID"]
+          search_ntext = df1.at[i+1, "bandID"]
           nresult = search_text_in_pdf(self.pdf_path, search_ntext)
         
-        self.WriteToLog(f"{df1.at[i, 'Name']}, {result}, {nresult}")
+        self.WriteToLog(f"{str(df1.at[i, 'number'])}, {str(df1.at[i, 'name'])}, {result}, {nresult}")
         
         if len(result) == 0:
-          err.append(df1.at[i, "Band ID"])
+          err.append(df1.at[i, "bandID"])
           continue
         elif len(nresult) == 0:
-          err.append(df1.at[i+1, "Band ID"])
+          err.append(df1.at[i+1, "bandID"])
           continue
         
         pdf_writer = pypdf.PdfWriter()
         for j in range(result[0], nresult[0]):
           pdf_writer.add_page(base_pdf.pages[j-1])
-        pdf_writer.write(os.path.join(output_path, f"{self.filename_temp}_{df1.at[i, 'Name']}.pdf"))
+        print(f"【DEBUG】df1.at[i, 'number']:{df1.at[i, 'number']}")
+        print(f"【DEBUG】str(df1.at[i, 'number']):{str(df1.at[i, 'number'])}")
+        pdf_writer.write(os.path.join(output_path, f"{self.filename_temp}_{str(df1.at[i, 'number'])}_{str(df1.at[i, 'name'])}.pdf"))
         pdf_writer.close()
       
       self.WriteToLog(err)
