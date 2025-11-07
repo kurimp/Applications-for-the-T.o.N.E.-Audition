@@ -1,4 +1,7 @@
+import os
 import tkinter as tk
+import shutil
+from tkinter import filedialog, messagebox
 from modules.utils.label_wraplength import label_wraplength
 from modules.TM_BandInfoApp import BandInfoApp
 from modules.TM_ScheduleInfoApp import ScheduleInfoApp
@@ -41,25 +44,23 @@ class TimetableMakerApp:
     padx_item = 5
     pady_item = 5
     
-    ############conf############
-    frame_conf = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
-    #label_conf_text = "タイムテーブルの開始時間を定義します。"
-    label_conf_text = "このボタンは無効化されています。"
-    label_conf = lw.label_maker(frame_conf, label_conf_text)
-    #button_conf = tk.Button(frame_conf, text = "config.py", command=lambda: self.run_script(filename_conf))
-    button_conf = tk.Button(frame_conf, text = "何も起きません。")
-    frame_conf.grid(row=0, column=0, sticky="ewsn", columnspan = 2)
-    label_conf.grid(row=0, column=0)
-    button_conf.grid(row=1, column=0, sticky="ewsn")
+    ############file############
+    frame_file = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
+    label_file_text = "設定ファイルとそのテンプレートを出力します。"
+    label_file = lw.label_maker(frame_file, label_file_text)
+    button_file = tk.Button(frame_file, text = "設定ファイル出力", command=self.fileoutput)
+    frame_file.grid(row=0, column=0, sticky="ewsn", columnspan = 2)
+    label_file.grid(row=0, column=0)
+    button_file.grid(row=1, column=0, sticky="ewsn")
     
-    frame_conf.rowconfigure(0, weight=1)
-    frame_conf.columnconfigure(0, weight=1)
+    frame_file.rowconfigure(0, weight=1)
+    frame_file.columnconfigure(0, weight=1)
     
     ############band############
     frame_band = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     label_band_text = "バンド一覧をインポートします。"
     label_band = lw.label_maker(frame_band, label_band_text)
-    button_band = tk.Button(frame_band, text = "band.py", command=self.run_BandInfoApp)
+    button_band = tk.Button(frame_band, text = "BandInfoApp", command=self.run_BandInfoApp)
     frame_band.grid(row=1, column=0, sticky="ewsn")
     label_band.grid(row=0, column=0)
     button_band.grid(row=1, column=0, sticky="ewsn")
@@ -71,7 +72,7 @@ class TimetableMakerApp:
     frame_sche = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     label_sche_text = "タイムテーブルをインポートします。"
     label_sche = lw.label_maker(frame_sche, label_sche_text)
-    button_sche = tk.Button(frame_sche, text = "schedule.py", command=self.run_ScheduleInfoApp)
+    button_sche = tk.Button(frame_sche, text = "ScheduleInfoApp", command=self.run_ScheduleInfoApp)
     frame_sche.grid(row=1, column=1, sticky="ewsn")
     label_sche.grid(row=0, column=0)
     button_sche.grid(row=1, column=0, sticky="ewsn")
@@ -83,7 +84,7 @@ class TimetableMakerApp:
     frame_runmain = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
     label_runmain_text = "タイムテーブル作成を実行します。"
     label_runmain = lw.label_maker(frame_runmain, label_runmain_text)
-    button_runmain = tk.Button(frame_runmain, text = "main.py", command=self.run_MainApp)
+    button_runmain = tk.Button(frame_runmain, text = "TimetableMainApp", command=self.run_MainApp)
     frame_runmain.grid(row=2, column=0, sticky="ewsn", columnspan=2)
     label_runmain.grid(row=0, column=0)
     button_runmain.grid(row=1, column=0, sticky="ewsn")
@@ -92,6 +93,39 @@ class TimetableMakerApp:
     frame_runmain.columnconfigure(0, weight=1)
     
     lw.treatment()
+  
+  def fileoutput(self):
+    try:
+      folderpath = filedialog.askdirectory(title="設定ファイルの保存先を指定")
+      if folderpath:
+        output_path = folderpath
+      else:
+        return
+      
+      template_files_name = ["バンドCSV.csv", "スケジュールCSV.csv"]
+      
+      for name in template_files_name:
+        template_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "resources", name)
+        output_file = os.path.join(output_path, name)
+        if os.path.isfile(output_file):
+          if messagebox.askyesno("上書き", f"{name}は既に存在しています。上書きしますか？"):
+            try:
+              os.remove(output_file)
+              shutil.copy(template_file, output_path)
+            except Exception as e:
+              messagebox.showerror("Error", f"{name}の保存に失敗しました:{e}")
+            else:
+              messagebox.showinfo("保存に成功しました", f"{name}の保存に成功しました。")
+        else:
+          try:
+            shutil.copy(template_file, output_path)
+          except Exception as e:
+            messagebox.showerror("Error", f"{name}の保存に失敗しました:{e}")
+          else:
+            messagebox.showinfo("保存に成功しました", f"{name}の保存に成功しました。")
+    except Exception as e:
+      messagebox.showerror("Error", f"設定ファイルの保存に失敗しました:{e}")
+  
   
   def run_BandInfoApp(self):
     root_band = tk.Toplevel(self.root)

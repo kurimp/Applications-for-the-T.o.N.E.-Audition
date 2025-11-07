@@ -193,19 +193,31 @@ class TimetableMainApp:
     return len(common_elements_set) > 0
   
   def time_judge(self, res):
-    i = 0
-    for band in res:
-      i += 1
-      block_start_time = self.df_sche[self.df_sche['item']==str(i)]['time_sta'].iloc[0]
-      block_finish_time = self.df_sche[self.df_sche['item']==str(i)]['time_fin'].iloc[0]
-      block_start_time = datetime.strptime(block_start_time, '%H:%M:%S').time()
-      block_finish_time = datetime.strptime(block_finish_time, '%H:%M:%S').time()
-      unavailable_time = self.df_band[self.df_band['name']==band[0]]['unavailable_time'].iloc[0]
-      unavailable_time = [m.strip() for m in unavailable_time if m.strip()]
-      unavailable_time = self.convert_time_strings_to_time_tuples(unavailable_time)
-      status = self.is_time_frame_available(block_start_time, block_finish_time, unavailable_time)
-      if not status:
-        return False
+    band_count = 0
+    for item_name in self.df_sche['item']:
+      if str(item_name).isdigit():
+        band_count += 1
+        if band_count > len(res):
+          break
+        current_band = res[band_count - 1]
+        filtered_sche = self.df_sche[self.df_sche['item'] == item_name]
+        
+        if filtered_sche.empty:
+          self.writeToLog(f"エラー:スケジュールに項目'{item_name}'が見つかりませんでした。")
+          return False
+        
+        block_start_time = filtered_sche['time_sta'].iloc[0]
+        block_finish_time = filtered_sche['time_fin'].iloc[0]
+        block_start_time = datetime.strptime(block_start_time, '%H:%M:%S').time()
+        block_finish_time = datetime.strptime(block_finish_time, '%H:%M:%S').time()
+        
+        unavailable_time = self.df_band[self.df_band['name'] == current_band[0]]['unavailable_time'].iloc[0]
+        unavailable_time = [m.strip() for m in unavailable_time if m.strip()]
+        unavailable_time = self.convert_time_strings_to_time_tuples(unavailable_time)
+        
+        status = self.is_time_frame_available(block_start_time, block_finish_time, unavailable_time)
+        if not status:
+          return False
     return True
 
   def is_time_frame_available(self, start_time: dt_time, end_time: dt_time, unavailable_slots: list[tuple[dt_time, dt_time]]):

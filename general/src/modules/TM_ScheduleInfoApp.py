@@ -161,7 +161,7 @@ class ScheduleInfoApp:
       return df
     
     try:
-      df_raw = pd.read_csv(filepath)
+      df_raw = pd.read_csv(filepath, comment='#')
       
       if not("duration" in df_raw.columns)*("item" in df_raw.columns):
         messagebox.showerror("Error", f"ファイルの形式が不正です。")

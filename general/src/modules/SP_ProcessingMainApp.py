@@ -35,6 +35,7 @@ class ProcessingMainApp:
     self.check01 = tk.BooleanVar()
     self.check02 = tk.BooleanVar()
     self.check03 = tk.BooleanVar()
+    self.trim = tk.BooleanVar()
     
     self.frame_conf = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
     self.frame_conf01 = tk.Frame(self.frame_conf)
@@ -56,9 +57,16 @@ class ProcessingMainApp:
     self.label_threshold = self.lw.label_maker(self.frame_conf02, "最低審査数を指定してください。")
     self.entry_threshold = tk.Entry(self.frame_conf02)
     
+    self.frame_conf03 = tk.Frame(self.frame_conf)
+    
+    self.trim_box = ttk.Checkbutton(self.frame_conf03, variable=self.trim)
+    self.frame_trim = tk.Frame(self.frame_conf03)
+    self.trim_text = self.lw.label_maker(self.frame_trim, "あるバンドに付けられた偏差値の最高と最低を除外しますか。")
+    
     self.frame_conf.grid(row=1, column=0, sticky="ew")
     self.frame_conf01.grid(row=0, column=0, sticky="ew")
     self.frame_conf02.grid(row=1, column=0, sticky="ew")
+    self.frame_conf03.grid(row=2, column=0, sticky="ew")
     
     self.check01_box.grid(row=0, column=0)
     self.frame_checkbox01.grid(row=0, column=1, sticky="ew")
@@ -72,14 +80,20 @@ class ProcessingMainApp:
     self.frame_checkbox03.grid(row=2, column=1, sticky="ew")
     self.check03_text.grid(row=0, column=0)
     
-    self.label_threshold.grid(row=0, column=0)
-    self.entry_threshold.grid(row=1, column=0)
+    self.label_threshold.grid(row=0, column=0, sticky="w")
+    self.entry_threshold.grid(row=1, column=0, sticky="w")
     self.entry_threshold.bind("<KeyRelease>", self.judging)
+    
+    self.trim_box.grid(row=0, column=0, sticky="ew")
+    self.frame_trim.grid(row=0, column=1, sticky="ew")
+    self.trim_text.grid(row=0, column=0)
     
     self.frame_conf.grid_columnconfigure(0, weight=1)
     self.frame_conf01.grid_columnconfigure(0, weight=0)
     self.frame_conf01.grid_columnconfigure(1, weight=1)
     self.frame_conf02.grid_columnconfigure(0, weight=0)
+    self.frame_conf03.grid_columnconfigure(0, weight=0)
+    self.frame_conf03.grid_columnconfigure(1, weight=1)
     
     ############log############
     self.frame_log = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
@@ -201,9 +215,10 @@ class ProcessingMainApp:
       _df_data[item+'_偏差値'] = (df_data[item]-df_data[item+'_平均'])/_df_data[item+'_標準偏差']*10+50
       
       #バンドごとの偏差値の平均(スコア)の計算
-      _df_result_item = _df_data.groupby('表示バンド名')[item+'_偏差値'].apply(
-        lambda x: x.sort_values().iloc[1:-1].mean() if len(x) > 2 else x.mean()
-      ).reset_index()
+      if self.trim.get():
+        _df_result_item = _df_data.groupby('表示バンド名')[item+'_偏差値'].apply(lambda x: x.sort_values().iloc[1:-1].mean() if len(x) > 2 else x.mean()).reset_index()
+      elif not self.trim.get():
+        _df_result_item = _df_data.groupby('表示バンド名')[item+'_偏差値'].apply(lambda x: x.mean()).reset_index()
       _df_result_item = _df_result_item.rename(columns={item+'_偏差値': item+'_スコア'})
       
       _df_result = pd.merge(df_result, _df_result_item, on='表示バンド名', how='left')

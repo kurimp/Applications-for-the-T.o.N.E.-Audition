@@ -1,4 +1,7 @@
+import os
+import shutil
 import tkinter as tk
+from tkinter import messagebox, filedialog
 from modules.utils.label_wraplength import label_wraplength
 from modules.SP_ConfigApp import ConfigApp
 from modules.SP_DataTreatmentApp import DataTreatmentApp
@@ -41,19 +44,17 @@ class ScoreProcessorApp:
     padx_item = 5
     pady_item = 5
     
-    ############conf############
-    frame_conf = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
-    #label_conf_text = "タイムテーブルの開始時間を定義します。"
-    label_conf_text = "このボタンは無効化されています。"
-    label_conf = lw.label_maker(frame_conf, label_conf_text)
-    #button_conf = tk.Button(frame_conf, text = "config.py", command=lambda: self.run_script(filename_conf))
-    button_conf = tk.Button(frame_conf, text = "何も起きません。")
-    frame_conf.grid(row=0, column=0, sticky="ewsn", columnspan = 2)
-    label_conf.grid(row=0, column=0)
-    button_conf.grid(row=1, column=0, sticky="ewsn")
+    ############file############
+    frame_file = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
+    label_file_text = "設定ファイルとそのテンプレートを出力します。"
+    label_file = lw.label_maker(frame_file, label_file_text)
+    button_file = tk.Button(frame_file, text = "設定ファイル出力", command=self.fileoutput)
+    frame_file.grid(row=0, column=0, sticky="ewsn", columnspan = 2)
+    label_file.grid(row=0, column=0)
+    button_file.grid(row=1, column=0, sticky="ewsn")
     
-    frame_conf.rowconfigure(0, weight=1)
-    frame_conf.columnconfigure(0, weight=1)
+    frame_file.rowconfigure(0, weight=1)
+    frame_file.columnconfigure(0, weight=1)
     
     ############config############
     frame_config = tk.Frame(frame_main, padx = padx_item, pady = pady_item, bd=2, relief="ridge")
@@ -92,6 +93,38 @@ class ScoreProcessorApp:
     frame_runmain.columnconfigure(0, weight=1)
     
     lw.treatment()
+  
+  def fileoutput(self):
+    try:
+      folderpath = filedialog.askdirectory(title="設定ファイルの保存先を指定")
+      if folderpath:
+        output_path = folderpath
+      else:
+        return
+      
+      template_files_name = ["バンドCSV.csv", "採点項目CSV.csv", "採点データCSV.csv"]
+      
+      for name in template_files_name:
+        template_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "resources", name)
+        output_file = os.path.join(output_path, name)
+        if os.path.isfile(output_file):
+          if messagebox.askyesno("上書き", f"{name}は既に存在しています。上書きしますか？"):
+            try:
+              os.remove(output_file)
+              shutil.copy(template_file, output_path)
+            except Exception as e:
+              messagebox.showerror("Error", f"{name}の保存に失敗しました:{e}")
+            else:
+              messagebox.showinfo("保存に成功しました", f"{name}の保存に成功しました。")
+        else:
+          try:
+            shutil.copy(template_file, output_path)
+          except Exception as e:
+            messagebox.showerror("Error", f"{name}の保存に失敗しました:{e}")
+          else:
+            messagebox.showinfo("保存に成功しました", f"{name}の保存に成功しました。")
+    except Exception as e:
+      messagebox.showerror("Error", f"設定ファイルの保存に失敗しました:{e}")
   
   def run_ConfigApp(self):
     root_config = tk.Toplevel(self.root)

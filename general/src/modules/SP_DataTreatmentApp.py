@@ -158,7 +158,7 @@ class DataTreatmentApp:
   
   def read_csv(self, filepath):
     try:
-      df_raw = pd.read_csv(filepath)
+      df_raw = pd.read_csv(filepath, comment='#')
       
       if not self.initialstatus:
         ############列のチェックリストを作成############
@@ -209,48 +209,35 @@ class DataTreatmentApp:
         canvas.bind('<Configure>', on_frame_configure)
         
         label_checkbox1 = self.lw.label_maker(frame_checkbox, text="審査員名")
-        label_checkbox2 = self.lw.label_maker(frame_checkbox, text="不要列")
         label_checkbox3 = self.lw.label_maker(frame_checkbox, text="列名")
         label_checkbox1.grid(row=0, column=0, sticky="w")
-        label_checkbox2.grid(row=0, column=1, sticky="w")
-        label_checkbox3.grid(row=0, column=2, sticky="w")
+        label_checkbox3.grid(row=0, column=1, sticky="w")
         
         for i, item in enumerate(df_raw_columns_list):
           var1 = tk.BooleanVar()
           chk1 = ttk.Checkbutton(frame_checkbox, variable=var1)
           chk1.grid(row=i+1, column=0, sticky="w")
           
-          var2 = tk.BooleanVar()
-          chk2 = ttk.Checkbutton(frame_checkbox, variable=var2)
-          chk2.grid(row=i+1, column=1, sticky="w")
-          
           item_label = self.lw.label_maker(frame_checkbox, text=item)
-          item_label.grid(row=i+1, column=2, sticky="w")
+          item_label.grid(row=i+1, column=1, sticky="w")
           
-          checkbox_vars[item] = [var1, var2]
+          checkbox_vars[item] = [var1]
         
         def columnconfig():
           column_name = ""
-          column_del = []
           for item, vars_list in checkbox_vars.items():
-            if not((vars_list[0].get())|(vars_list[1].get())):
+            if not vars_list[0].get():
               continue
-            elif (vars_list[0].get())&(vars_list[1].get()):
-              messagebox.showerror("Error", f"審査員名が不要列に指定されています。")
-              return
             elif vars_list[0].get():
               if column_name == "":
                 column_name = item
               else:
                 messagebox.showerror("Error", f"審査員名が複数選択されています。")
                 return
-            elif vars_list[1].get():
-              column_del.append(item)
           if column_name == "":
             messagebox.showerror("Error", f"審査員名が選択されていません。")
             return
           self.column_name = column_name
-          self.column_del = column_del
           root_confirm.destroy()
         
         button_confirm = ttk.Button(root_confirm, command=columnconfig)
@@ -266,8 +253,6 @@ class DataTreatmentApp:
         self.root.wait_window(root_confirm)
         
         ########################
-      
-        df_raw = df_raw.drop(columns=self.column_del)
         
         column_melted = [col for col in df_raw.columns if col not in self.column_name]
         

@@ -140,7 +140,7 @@ class ConfigApp:
   
   def read_csv_band(self, filepath):
     try:
-      df_band = pd.read_csv(filepath)
+      df_band = pd.read_csv(filepath, comment='#')
       
       if not(("name" in df_band.columns)&("name_on_form" in df_band.columns)):
         messagebox.showerror("Error", f"ファイルの形式が不正です。")
@@ -170,7 +170,7 @@ class ConfigApp:
   
   def read_csv_item(self, filepath):
     try:
-      df_item = pd.read_csv(filepath)
+      df_item = pd.read_csv(filepath, comment='#')
       
       if not("item" in df_item.columns)*("full" in df_item.columns)*("weight" in df_item.columns):
         messagebox.showerror("Error", f"ファイルの形式が不正です。")

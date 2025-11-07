@@ -23,7 +23,7 @@ class BandInfoApp:
     
     ############information############
     self.frame_info = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
-    self.label_info = self.lw.label_maker(self.frame_info, "代替措置適用対象バンドはalternative列で「対象」を指定してください。\n出演不可能時間がある場合はunavailable_time列に記入してください。記入の際は、以下の記入例に忠実に従ってください。なお、スペースは自動で消去します。\n9:00:00-13:00:00,15:00:00-16:00:00")
+    self.label_info = self.lw.label_maker(self.frame_info, "代替措置適用対象バンドはalternative列で「対象」を指定してください。\n出演不可能時間がある場合はunavailable_time列に記入してください。\n記入の際は、以下の記入例に忠実に従ってください。なお、スペースは自動で消去します。\n9:00:00-13:00:00,15:00:00-16:00:00")
     self.frame_info.grid(row=0, column=0, sticky="ew")
     self.label_info.grid(row=0, column=0, sticky="ew")
     
@@ -320,12 +320,14 @@ class BandInfoApp:
       return df
     
     try:
-      df_raw = pd.read_csv(filepath)
+      df_raw = pd.read_csv(filepath, comment='#')
       self.df = preprocess_dataframe(df_raw.copy())
       
       if not("name" in self.df.columns)*("member" in self.df.columns):
         messagebox.showerror("Error", f"ファイルの形式が不正です。")
         return
+      
+      self.df = self.df[['no','name','unavailable_time','alternative','member']]
       
       self.display_data_in_treeview(self.df)
       
