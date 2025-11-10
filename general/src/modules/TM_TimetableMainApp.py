@@ -241,9 +241,17 @@ class TimetableMainApp:
       individual_slot_strings = [s.strip() for s in slot_group_str.split(',') if s.strip()]
 
       for slot_str in individual_slot_strings:
-        start_time_str, end_time_str = slot_str.split('-')
-        parsed_start_time = datetime.strptime(start_time_str.strip(), '%H:%M:%S').time()
-        parsed_end_time = datetime.strptime(end_time_str.strip(), '%H:%M:%S').time()
+        parsed_time = []
+        for time_str in slot_str.split('-'):
+          time_parts = list(map(int, time_str.split(":")))
+          if len(time_parts) == 2:
+            parsed_time.append(datetime.strptime(time_str.strip(), '%H:%M').time())
+          elif len(time_parts) == 3:
+            parsed_time.append(datetime.strptime(time_str.strip(), '%H:%M:%S').time())
+        
+        
+        parsed_start_time = parsed_time[0]
+        parsed_end_time = parsed_time[1]
         
         #予防的措置として、出演不可能時間の後ろをステージ外での待機時間分だけ伸ばす
         _parsed_end_time = datetime.combine(datetime.today(), parsed_end_time)

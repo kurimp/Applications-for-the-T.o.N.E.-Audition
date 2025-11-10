@@ -105,7 +105,7 @@ class TimetableMakerApp:
       template_files_name = ["バンドCSV.csv", "スケジュールCSV.csv"]
       
       for name in template_files_name:
-        template_file = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "resources", name)
+        template_file = os.path.join(self.bundle_dir, "resources", name)
         output_file = os.path.join(output_path, name)
         if os.path.isfile(output_file):
           if messagebox.askyesno("上書き", f"{name}は既に存在しています。上書きしますか？"):

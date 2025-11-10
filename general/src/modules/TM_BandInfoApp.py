@@ -23,7 +23,7 @@ class BandInfoApp:
     
     ############information############
     self.frame_info = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
-    self.label_info = self.lw.label_maker(self.frame_info, "代替措置適用対象バンドはalternative列で「対象」を指定してください。\n出演不可能時間がある場合はunavailable_time列に記入してください。\n記入の際は、以下の記入例に忠実に従ってください。なお、スペースは自動で消去します。\n9:00:00-13:00:00,15:00:00-16:00:00")
+    self.label_info = self.lw.label_maker(self.frame_info, "代替措置適用対象バンドはalternative列で「対象」を指定してください。\n出演不可能時間がある場合はunavailable_time列に記入してください。\n記入の際は、以下の記入例に忠実に従ってください。なお、スペースは自動で消去します。\n9:00-13:00,15:00:00-16:00:00")
     self.frame_info.grid(row=0, column=0, sticky="ew")
     self.label_info.grid(row=0, column=0, sticky="ew")
     
@@ -158,8 +158,9 @@ class BandInfoApp:
       #self.widget_editor.grab_set()
 
       self.widget_editor.bind("<<ComboboxSelected>>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
-      self.widget_editor.bind("<FocusOut>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
-      self.tree.bind("<Button-1>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
+      self.widget_editor.bind("<Return>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
+      #self.widget_editor.bind("<FocusOut>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
+      #self.tree.bind("<Button-1>", lambda e: self.on_edit_end(e, item_id, column_id, col_name, row_index))
   
   def on_edit_end(self, event, item_id, column_id, col_name, row_index):
     if not self.widget_editor:
@@ -252,7 +253,13 @@ class BandInfoApp:
       return extracted_list
     
     def validate_time_format(time_str):
-      h, m, s = map(int, time_str.split(":"))
+      time_parts = list(map(int, time_str.split(":")))
+      
+      if len(time_parts) == 2:
+        h, m = time_parts
+        s = 0
+      elif len(time_parts) == 3:
+        h, m, s = time_parts
       return 0 <= h <= 23 and 0 <= m <= 59 and 0 <= s <= 59
     
     if new_value == "":
@@ -265,7 +272,7 @@ class BandInfoApp:
     
     all_valid = True
     for value in value_list:
-      date_pattern_01 = re.compile(r"^\d{1,2}:\d{2}:\d{2}-\d{1,2}:\d{2}:\d{2}$")
+      date_pattern_01 = re.compile(r"^\d{1,2}:\d{2}(:\d{2})?-\d{1,2}:\d{2}(:\d{2})?$")
       
       if date_pattern_01.fullmatch(value):
         try:
