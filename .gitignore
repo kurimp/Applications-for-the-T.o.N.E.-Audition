@@ -105,3 +105,4 @@ cache/
 test/
 testfile/
 *.spec
+build.sh

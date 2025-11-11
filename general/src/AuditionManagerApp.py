@@ -8,7 +8,7 @@ from ScoreProcessorApp import ScoreProcessorApp
 from FeedbackMakerApp import FeedbackMakerApp
 
 #実行ファイル化のためのコマンド
-#pyinstaller AuditionManagerApp.spec
+#bash build.sh AuditionManagerApp_v1.0.0_for_Mac
 #requirements.txt出力のためのコマンド
 #pip freeze > requirements.txt
 #requirements.txt適用のためのコマンド
@@ -16,14 +16,11 @@ from FeedbackMakerApp import FeedbackMakerApp
 
 if getattr(sys, 'frozen', False):
   bundle_dir = sys._MEIPASS
-  check01 = platform.system() == "Darwin"
-  check02 = os.path.basename(sys.executable) == "AuditionManagerApp"
-  check03 = os.path.basename(os.path.dirname(sys.executable)) == "MacOS"
-  check04 = os.path.basename(os.path.dirname(os.path.dirname(sys.executable))) == "Contents"
-  check05 = os.path.basename(os.path.dirname(os.path.dirname(os.path.dirname(sys.executable)))) == "AuditionManagerApp.app"
-  if check01 & check02 & check03 & check04 & check05:
-    exe_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(sys.executable))))
+  if platform.system() == "Darwin" and os.path.basename(sys.executable) == "AuditionManagerApp":
+    app_bundle_path = os.path.dirname(os.path.dirname(os.path.dirname(sys.executable)))
+    exe_dir = os.path.dirname(app_bundle_path)
   else:
+    # その他のfrozen環境（Windows, Linux, またはMacの別形式）
     exe_dir = os.path.dirname(sys.executable)
 else:
   bundle_dir = os.path.dirname(os.path.abspath(__file__))
