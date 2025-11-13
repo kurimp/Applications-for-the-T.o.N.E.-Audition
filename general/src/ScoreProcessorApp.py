@@ -8,9 +8,9 @@ from modules.SP_DataTreatmentApp import DataTreatmentApp
 from modules.SP_ProcessingMainApp import ProcessingMainApp
 
 class ScoreProcessorApp:
-  def __init__(self, root, base_path, exe_path):
-    self.bundle_dir = base_path
-    self.exe_dir = exe_path
+  def __init__(self, root, base_dir, cache_dir):
+    self.bundle_dir = base_dir
+    self.cache_dir = cache_dir
     
     self.root = root
     
@@ -128,21 +128,21 @@ class ScoreProcessorApp:
   
   def run_ConfigApp(self):
     root_config = tk.Toplevel(self.root)
-    ConfigApp(root_config, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    ConfigApp(root_config, base_dir=self.bundle_dir, cache_dir=self.cache_dir)
     root_config.transient(self.root)
     root_config.grab_set()
     self.root.wait_window(root_config)
 
   def run_DataTreatmentApp(self):
     root_data = tk.Toplevel(self.root)
-    DataTreatmentApp(root_data, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    DataTreatmentApp(root_data, base_dir=self.bundle_dir, cache_dir=self.cache_dir)
     root_data.transient(self.root)
     root_data.grab_set()
     self.root.wait_window(root_data)
   
   def run_MainApp(self):
     root_main = tk.Toplevel(self.root)
-    ProcessingMainApp(root_main, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    ProcessingMainApp(root_main, base_dir=self.bundle_dir, cache_dir=self.cache_dir)
     root_main.transient(self.root)
     root_main.grab_set()
     self.root.wait_window(root_main)

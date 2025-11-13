@@ -8,9 +8,9 @@ from modules.TM_ScheduleInfoApp import ScheduleInfoApp
 from modules.TM_TimetableMainApp import TimetableMainApp
 
 class TimetableMakerApp:
-  def __init__(self, root, base_path, exe_path):
-    self.bundle_dir = base_path
-    self.exe_dir = exe_path
+  def __init__(self, root, base_dir, cache_dir):
+    self.base_dir = base_dir
+    self.cache_dir = cache_dir
     
     self.root = root
     
@@ -105,7 +105,7 @@ class TimetableMakerApp:
       template_files_name = ["バンドCSV.csv", "スケジュールCSV.csv"]
       
       for name in template_files_name:
-        template_file = os.path.join(self.bundle_dir, "resources", name)
+        template_file = os.path.join(self.base_dir, "resources", name)
         output_file = os.path.join(output_path, name)
         if os.path.isfile(output_file):
           if messagebox.askyesno("上書き", f"{name}は既に存在しています。上書きしますか？"):
@@ -129,21 +129,21 @@ class TimetableMakerApp:
   
   def run_BandInfoApp(self):
     root_band = tk.Toplevel(self.root)
-    BandInfoApp(root_band, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    BandInfoApp(root_band, base_dir=self.base_dir, cache_dir=self.cache_dir)
     root_band.transient(self.root)
     root_band.grab_set()
     self.root.wait_window(root_band)
 
   def run_ScheduleInfoApp(self):
     root_sche = tk.Toplevel(self.root)
-    ScheduleInfoApp(root_sche, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    ScheduleInfoApp(root_sche, base_dir=self.base_dir, cache_dir=self.cache_dir)
     root_sche.transient(self.root)
     root_sche.grab_set()
     self.root.wait_window(root_sche)
   
   def run_MainApp(self):
     root_main = tk.Toplevel(self.root)
-    TimetableMainApp(root_main, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    TimetableMainApp(root_main, base_dir=self.base_dir, cache_dir=self.cache_dir)
     root_main.transient(self.root)
     root_main.grab_set()
     self.root.wait_window(root_main)

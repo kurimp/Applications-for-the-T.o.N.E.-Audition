@@ -5,9 +5,9 @@ import pandas as pd
 from modules.utils.label_wraplength import label_wraplength
 
 class ProcessingMainApp:
-  def __init__(self, root, base_path, exe_path):
-    self.base_path = base_path
-    self.exe_path = exe_path
+  def __init__(self, root, base_dir, cache_dir):
+    self.base_dir = base_dir
+    self.cache_dir = cache_dir
     
     self.read_csvs()
     
@@ -150,9 +150,9 @@ class ProcessingMainApp:
     self.logbox['state'] = 'disabled'
   
   def read_csvs(self):
-    self.band_file_path = os.path.join(self.exe_path, "cache", "ScoreProcessorApp", "band.csv")
-    self.item_file_path = os.path.join(self.exe_path, "cache", "ScoreProcessorApp", "item.csv")
-    self.data_file_path = os.path.join(self.exe_path, "cache", "ScoreProcessorApp", "data.csv")
+    self.band_file_path = os.path.join(self.cache_dir, "ScoreProcessorApp", "band.csv")
+    self.item_file_path = os.path.join(self.cache_dir, "ScoreProcessorApp", "item.csv")
+    self.data_file_path = os.path.join(self.cache_dir, "ScoreProcessorApp", "data.csv")
     
     try:
       self.df_band = pd.read_csv(self.band_file_path)
@@ -250,7 +250,7 @@ class ProcessingMainApp:
     self.WriteToLog("以下に処理の結果を表示します。")
     self.WriteToLog(f"{df_result}")
     try:
-      log_dir = os.path.join(self.exe_path, "cache", "ScoreProcessorApp", "logs")
+      log_dir = os.path.join(self.cache_dir, "ScoreProcessorApp", "logs")
       path_data_raw = os.path.join(log_dir, "data_raw.csv")
       path_judge = os.path.join(log_dir, "judge.csv")
       path_data = os.path.join(log_dir, "data.csv")

@@ -8,9 +8,9 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 
 class CommentCollectionApp:
-  def __init__(self, root, base_path, exe_path):
-    self.base_path = base_path
-    self.exe_path = exe_path
+  def __init__(self, root, base_dir, cache_dir):
+    self.base_dir = base_dir
+    self.cache_dir = cache_dir
     
     self.root = root
     self.lw = label_wraplength(self.root)

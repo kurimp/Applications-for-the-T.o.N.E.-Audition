@@ -11,9 +11,9 @@ import ast
 import threading
 
 class TimetableMainApp:
-  def __init__(self, root, base_path, exe_path):
-    self.base_path = base_path
-    self.exe_path = exe_path
+  def __init__(self, root, base_dir, cache_dir):
+    self.base_dir = base_dir
+    self.cache_dir = cache_dir
     
     self.read_csvs()
     
@@ -318,7 +318,7 @@ class TimetableMainApp:
     
     number = np.arange(1, len(times)+1, 1)
     
-    output_folder_path = os.path.join(self.exe_path, "cache", "TimetableMakerApp", "logs")
+    output_folder_path = os.path.join(self.cache_dir, "TimetableMakerApp", "logs")
     output_file_name = "result_"+datetime.now().strftime('%y%m%d%H%M%S')+".csv"
     
     output_file_path = os.path.join(output_folder_path, output_file_name)
@@ -343,8 +343,8 @@ class TimetableMainApp:
     self.running_thread.start()
   
   def read_csvs(self):
-    self.band_file_path = os.path.join(self.exe_path, "cache", "TimetableMakerApp", "band.csv")
-    self.sche_file_path = os.path.join(self.exe_path, "cache", "TimetableMakerApp", "schedule.csv")
+    self.band_file_path = os.path.join(self.cache_dir, "TimetableMakerApp", "band.csv")
+    self.sche_file_path = os.path.join(self.cache_dir, "TimetableMakerApp", "schedule.csv")
     
     try:
       self.df_band = pd.read_csv(self.band_file_path)

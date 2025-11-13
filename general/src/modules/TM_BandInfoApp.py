@@ -8,8 +8,8 @@ import numpy as np
 from modules.utils.label_wraplength import label_wraplength
 
 class BandInfoApp:
-  def __init__(self, root, base_path, exe_path):
-    self.save_filepath=os.path.join(exe_path, "cache", "TimetableMakerApp", "band.csv")
+  def __init__(self, root, base_dir, cache_dir):
+    self.save_filepath=os.path.join(cache_dir, "TimetableMakerApp", "band.csv")
     
     self.root = root
     self.lw = label_wraplength(self.root)

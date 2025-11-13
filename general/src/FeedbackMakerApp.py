@@ -4,9 +4,9 @@ from modules.FM_CommentCollectionApp import CommentCollectionApp
 from modules.FM_SeparatePDFApp import SeparatePDFApp
 
 class FeedbackMakerApp:
-  def __init__(self, root, base_path, exe_path):
-    self.bundle_dir = base_path
-    self.exe_dir = exe_path
+  def __init__(self, root, base_dir, cache_dir):
+    self.base_dir = base_dir
+    self.cache_dir = cache_dir
     
     self.root = root
     
@@ -82,14 +82,14 @@ class FeedbackMakerApp:
   
   def run_CommentCollectionApp(self):
     root_config = tk.Toplevel(self.root)
-    CommentCollectionApp(root_config, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    CommentCollectionApp(root_config, base_dir=self.base_dir, cache_dir=self.cache_dir)
     root_config.transient(self.root)
     root_config.grab_set()
     self.root.wait_window(root_config)
   
   def run_SeparatePDFApp(self):
     root_data = tk.Toplevel(self.root)
-    SeparatePDFApp(root_data, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    SeparatePDFApp(root_data, base_dir=self.base_dir, cache_dir=self.cache_dir)
     root_data.transient(self.root)
     root_data.grab_set()
     self.root.wait_window(root_data)

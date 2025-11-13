@@ -1,5 +1,6 @@
 import os
 import tkinter as tk
+from tkinter import messagebox
 import sys
 import platform
 from modules.utils.label_wraplength import label_wraplength
@@ -8,33 +9,31 @@ from ScoreProcessorApp import ScoreProcessorApp
 from FeedbackMakerApp import FeedbackMakerApp
 
 #実行ファイル化のためのコマンド
-#bash build.sh AuditionManagerApp_v1.0.0_for_Mac
+#bash build.sh AuditionManagerApp_v1.0.2_for_Mac
 #requirements.txt出力のためのコマンド
 #pip freeze > requirements.txt
 #requirements.txt適用のためのコマンド
 #pip install -r requirements.txt
 
 if getattr(sys, 'frozen', False):
-  bundle_dir = sys._MEIPASS
-  if platform.system() == "Darwin" and os.path.basename(sys.executable) == "AuditionManagerApp":
-    app_bundle_path = os.path.dirname(os.path.dirname(os.path.dirname(sys.executable)))
-    exe_dir = os.path.dirname(app_bundle_path)
+  base_dir = sys._MEIPASS
+  if platform.system() == "Windows":
+    cache_dir = os.path.join(os.path.expandvars("%LOCALAPPDATA%"), "AMC", "AuditionManagerApp", "cache")
+  elif platform.system() == "Darwin":
+    cache_dir = os.path.join(os.path.expanduser("~"), "Library", "Caches", "AuditionManagerApp", "cache")
   else:
-    # その他のfrozen環境（Windows, Linux, またはMacの別形式）
-    exe_dir = os.path.dirname(sys.executable)
+    messagebox.showerror('適切な環境で実行されていません。実行環境を確認してください。')
 else:
-  bundle_dir = os.path.dirname(os.path.abspath(__file__))
-  exe_dir = os.path.dirname(os.path.abspath(__file__))
+  base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+  cache_dir = os.path.join(base_dir, "cache")
 
-print(f"【DEBUG】bundle_dir:{bundle_dir}")
-print(f"【DEBUG】exe_dir:{exe_dir}")
-
-os.chdir(bundle_dir)
+print(f"【DEBUG】base_dir:{base_dir}")
+print(f"【DEBUG】cache_dir:{cache_dir}")
 
 class AuditionManagerApp:
   def __init__(self, root):
-    self.bundle_dir = bundle_dir
-    self.exe_dir = exe_dir
+    self.base_dir = base_dir
+    self.cache_dir = cache_dir
     
     self.make_folders()
     
@@ -127,29 +126,29 @@ class AuditionManagerApp:
   
   def run_TimetableMakerApp(self):
     root_timetable = tk.Toplevel(self.root)
-    TimetableMakerApp(root_timetable, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    TimetableMakerApp(root_timetable, base_dir=self.base_dir, cache_dir=self.cache_dir)
     root_timetable.transient(self.root)
     root_timetable.grab_set()
     self.root.wait_window(root_timetable)
   
   def run_ScoreProcessorApp(self):
     root_score = tk.Toplevel(self.root)
-    ScoreProcessorApp(root_score, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    ScoreProcessorApp(root_score, base_dir=self.base_dir, cache_dir=self.cache_dir)
     root_score.transient(self.root)
     root_score.grab_set()
     self.root.wait_window(root_score)
   
   def run_FeedbackMakerApp(self):
     root_feedback = tk.Toplevel(self.root)
-    FeedbackMakerApp(root_feedback, base_path=self.bundle_dir, exe_path=self.exe_dir)
+    FeedbackMakerApp(root_feedback, base_dir=self.base_dir, cache_dir=self.cache_dir)
     root_feedback.transient(self.root)
     root_feedback.grab_set()
     self.root.wait_window(root_feedback)
     
   def make_folders(self):
-    folder_path_list = [os.path.join(self.exe_dir, "cache", "TimetableMakerApp", "logs"), 
-                        os.path.join(self.exe_dir, "cache", "ScoreProcessorApp", "logs"), 
-                        os.path.join(self.exe_dir, "cache", "FeedbackMakerApp")]
+    folder_path_list = [os.path.join(self.cache_dir, "TimetableMakerApp", "logs"), 
+                        os.path.join(self.cache_dir, "ScoreProcessorApp", "logs"), 
+                        os.path.join(self.cache_dir, "FeedbackMakerApp")]
     
     try:
       for folder_path in folder_path_list:
@@ -157,6 +156,9 @@ class AuditionManagerApp:
         os.makedirs(folder_path, exist_ok=True)
     except Exception as e:
       print(f"DEBUG:{e}")
+      messagebox.showerror("Error", f"キャッシュファイルの保存に失敗しました:{e}\nbase_dir:{self.base_dir}\ncache_dir:{self.cache_dir}")
+      print(f"【DEBUG】base_dir:{self.base_dir}")
+      print(f"【DEBUG】exe_dir:{self.cache_dir}")
 
 if __name__ == "__main__":
   root = tk.Tk()

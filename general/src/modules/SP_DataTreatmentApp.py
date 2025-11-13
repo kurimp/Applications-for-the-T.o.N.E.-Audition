@@ -8,13 +8,9 @@ from modules.utils.label_wraplength import label_wraplength
 from datetime import datetime
 
 class DataTreatmentApp:
-  def __init__(self, root, base_path, exe_path):
-    self.save_filepath=os.path.join(exe_path, "cache", "ScoreProcessorApp", "data.csv")
-    self.item_filepath=os.path.join(exe_path, "cache", "ScoreProcessorApp", "item.csv")
-    
-    #####開発用#####
-    self.exe_path = exe_path
-    ##########
+  def __init__(self, root, base_dir, cache_dir):
+    self.save_filepath=os.path.join(cache_dir, "ScoreProcessorApp", "data.csv")
+    self.item_filepath=os.path.join(cache_dir, "ScoreProcessorApp", "item.csv")
     
     self.root = root
     self.lw = label_wraplength(self.root)
