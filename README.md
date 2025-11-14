@@ -12,7 +12,7 @@ Audition Manager Appは、千葉大学アカペラサークルT.o.N.E.で実施�
 ## 使い方  
 1. https://github.com/kurimp/Applications-for-the-T.o.N.E.-Audition/releases より使用するverをダウンロードします。Windows版とMacOS版が用意されています。ダウンロードの際、ウイルスチェックに係る警告が出ると思いますので、もし進めなければ適宜調べてください。  
 1. ダウンロードしたファイルを実行します。実行ファイルになっているため、基本的にはダブルクリックで起動が可能です。ただし、MacOS版は、仕様上、セキュリティの例外にする必要があります<sup>※1</sup>。  
-1. 起動後、使いたいAppを選んでください。なお、「AuditionManagerApp」ディレクトリがWindowsではLOCALAPPDATA%\AMC、MacOSでは~/Library/Cachesに生成されています。  
+1. 起動後、使いたいAppを選んでください。なお、「AuditionManagerApp」ディレクトリがWindowsでは%LOCALAPPDATA%\AMC、MacOSでは~/Library/Cachesに生成されています。  
 
 <sup>※1</sup>起動時、以下の表示が出ることがあります。  
 ![001-01](https://github.com/user-attachments/assets/e13d8780-a7d3-434b-8ec3-83524ee8b144)  
