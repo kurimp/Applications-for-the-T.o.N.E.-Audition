@@ -1,6 +1,5 @@
 import csv
 from googleapiclient.discovery import build
-from tqdm import tqdm
 import pandas as pd
 import random
 from modules.utils.label_wraplength import label_wraplength
@@ -144,7 +143,7 @@ class CommentCollectionApp:
         #タイトルの書き込み
         writer.writerow(["number", "name", "videoID", "bandID", "score", "judge", "title", "comments"])
         
-        for i in tqdm(range(0, len(self.df_data))):
+        for i in range(0, len(self.df_data)):
           #プレイリストデータから動画IDを１つ取得
           number = self.df_data.at[i, "number"]
           name = self.df_data.at[i, "name"]
