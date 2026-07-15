@@ -1,9 +1,5 @@
-import csv
 import os
-from googleapiclient.discovery import build
-from tqdm import tqdm
 import pandas as pd
-import random
 from modules.utils.label_wraplength import label_wraplength
 import tkinter as tk
 from tkinter import ttk, filedialog
@@ -195,7 +191,7 @@ class SeparatePDFApp:
 
       err=[]
 
-      for i in tqdm(range(0, len(df1))):
+      for i in range(0, len(df1)):
         
         search_text = df1.at[i, "bandID"]
         result = search_text_in_pdf(self.pdf_path, search_text)
