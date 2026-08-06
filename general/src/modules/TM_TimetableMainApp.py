@@ -9,6 +9,7 @@ import random
 import time
 import ast
 import threading
+import re
 
 class TimetableMainApp:
   def __init__(self, root, base_dir, cache_dir):
@@ -51,6 +52,7 @@ class TimetableMainApp:
     self.frame_conf01 = tk.Frame(self.frame_conf)
     self.frame_conf02 = tk.Frame(self.frame_conf)
     self.frame_conf03 = tk.Frame(self.frame_conf)
+    self.frame_conf04 = tk.Frame(self.frame_conf)
     
     self.check01_box = ttk.Checkbutton(self.frame_conf01, variable=self.check01, command = self.judging)
     self.frame_checkbox01 = tk.Frame(self.frame_conf01)
@@ -71,6 +73,11 @@ class TimetableMainApp:
     self.check04_entry = tk.Entry(self.frame_conf03, width=10)
     self.check04_entry.bind("<KeyRelease>", self.judging)
     self.check04_entry.insert(0, 15)
+    
+    self.frame_checkbox05 = tk.Frame(self.frame_conf04)
+    self.check05_text = self.lw.label_maker(self.frame_checkbox05, "前後の出演者の連続を許可する休憩を挿入する位置をカンマ区切りの整数で入力してください。例：バンド4とバンド8の後に休憩を入れるなら「4,8」と入力。")
+    self.check05_entry = tk.Entry(self.frame_conf04, width=10)
+    self.check05_entry.bind("<KeyRelease>", self.judging)
     
     self.frame_conf.grid(row=1, column=0, sticky="ew")
     self.frame_conf01.grid(row=0, column=0, sticky="ew")
@@ -95,6 +102,12 @@ class TimetableMainApp:
     self.check04_text.grid(row=0, column=0)
     self.check04_entry.grid(row=0, column=0)
     
+    self.frame_conf04.grid(row=3, column=0, sticky="ew")
+    
+    self.frame_checkbox05.grid(row=0, column=1, sticky="ew")
+    self.check05_text.grid(row=0, column=0)
+    self.check05_entry.grid(row=0, column=0)
+    
     self.frame_conf.grid_columnconfigure(0, weight=1)
     self.frame_conf01.grid_columnconfigure(0, weight=0)
     self.frame_conf01.grid_columnconfigure(1, weight=1)
@@ -102,6 +115,8 @@ class TimetableMainApp:
     self.frame_conf02.grid_columnconfigure(1, weight=1)
     self.frame_conf03.grid_columnconfigure(0, weight=0)
     self.frame_conf03.grid_columnconfigure(1, weight=1)
+    self.frame_conf04.grid_columnconfigure(0, weight=0)
+    self.frame_conf04.grid_columnconfigure(1, weight=1)
     
     ############status############
     self.frame_status = tk.Frame(self.root, padx=10, pady=10, bd=1, relief="ridge")
@@ -154,17 +169,23 @@ class TimetableMainApp:
     self.maximum_attempts = self.check03_entry.get().strip().replace(" ", "").replace("　", "")
     self.check03_entry.delete(0, tk.END)
     self.check03_entry.insert(0, self.maximum_attempts)
-    self.space_minutes = self.check04_entry.get().strip().replace(" ", "").replace("　", "")
+    self.wait_space_minutes = self.check04_entry.get().strip().replace(" ", "").replace("　", "")
     self.check04_entry.delete(0, tk.END)
-    self.check04_entry.insert(0, self.space_minutes)
+    self.check04_entry.insert(0, self.wait_space_minutes)
+    self.rest_space_minutes = self.check05_entry.get().strip().replace(" ", "").replace("　", "")
+    self.check05_entry.delete(0, tk.END)
+    self.check05_entry.insert(0, self.rest_space_minutes)
     if self.check01.get() and self.check02.get():
       try:
         self.maximum_attempts = int(self.maximum_attempts)
         if self.maximum_attempts > 0:
-          self.space_minutes = int(self.space_minutes)
-          if self.space_minutes > 0:
-            self.button_running.config(state=tk.NORMAL)
-          return
+          self.wait_space_minutes = int(self.wait_space_minutes)
+          if self.wait_space_minutes > 0:
+            ##ここで休憩位置がカンマ区切りで入っているか確認
+            pattern = r'^(\d+(,\d+)*)?$'
+            if bool(re.fullmatch(pattern, self.rest_space_minutes)):
+              self.button_running.config(state=tk.NORMAL)
+              return
       except Exception:
         pass
     self.button_running.config(state=tk.DISABLED)
@@ -182,6 +203,7 @@ class TimetableMainApp:
     return cleaned_items
 
   def has_common_elements(self, list1, list2):
+    ##このfunctionは、list1とlist2に同じ要素が1つ以上含まれていたらTrue(bool)を返す。
     cleaned_list1 = self.clean_list(list1)
     cleaned_list2 = self.clean_list(list2)
     
@@ -255,7 +277,7 @@ class TimetableMainApp:
         
         #予防的措置として、出演不可能時間の後ろをステージ外での待機時間分だけ伸ばす
         _parsed_end_time = datetime.combine(datetime.today(), parsed_end_time)
-        _parsed_end_time += timedelta(minutes=self.space_minutes)
+        _parsed_end_time += timedelta(minutes=self.wait_space_minutes)
         parsed_end_time = _parsed_end_time.time()
         
         converted_slots.append((parsed_start_time, parsed_end_time))
@@ -264,7 +286,7 @@ class TimetableMainApp:
   
   def running(self):
     bandlist = []
-    for index, row in self.df_band.iterrows():
+    for _, row in self.df_band.iterrows():
       band_name = row['name']
       if row['alternative'] != "":
         members = []
@@ -280,6 +302,9 @@ class TimetableMainApp:
     
     self.exit_condition = False
     
+    ##ここでカンマ区切りの休憩位置をリストに直して格納
+    rest_list = [int(x) for x in self.rest_space_minutes.split(",") if x]
+    
     while self.count < self.maximum_attempts:
       self.count += 1
       if self.count % 1000000 == 0:
@@ -293,7 +318,11 @@ class TimetableMainApp:
       for i in num:
         res.append(bandlist[i])
         if j != 0:
-          status = self.has_common_elements(res[j-1][1], res[j][1])
+          ##ここで休憩位置に該当するか確認し、する場合はhas_common_elementsをスキップ
+          if j in rest_list:
+            status = False
+          else:
+            status = self.has_common_elements(res[j-1][1], res[j][1])
           if status == True:
             break
         j += 1
@@ -350,13 +379,13 @@ class TimetableMainApp:
       self.df_band = pd.read_csv(self.band_file_path)
     except Exception as e:
       messagebox.showerror("Error", f"バンドデータの読み込みに失敗しました:{e}")
-      self.close_app(self)
+      self.close_app()
       
     try:
       self.df_sche = pd.read_csv(self.sche_file_path)
     except Exception as e:
       messagebox.showerror("Error", f"スケジュールデータの読み込みに失敗しました:{e}")
-      self.close_app(self)
+      self.close_app()
   
   def close_app(self):
       self.root.destroy()
